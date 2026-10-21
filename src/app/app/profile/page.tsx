@@ -142,17 +142,30 @@ export default function ProfilePage() {
         <h2 className="t-h3">Account</h2>
         <div className="mt-4 rounded-card border border-line p-5">
           <p className="t-small" style={{ color: 'var(--muted)' }}>
-            Data is stored on this device for now. Cloud sync and sign-in arrive with
-            the hosted release.
+            Your profile is stored in this browser for now. Google sign-in and cloud
+            sync arrive at v3 — then your progress follows you across devices.
           </p>
-          <button
-            className="btn btn-ghost mt-4"
-            onClick={() => {
-              if (confirm('Reset all local progress? This cannot be undone.')) reset();
-            }}
-          >
-            Reset progress
-          </button>
+          <div className="mt-4 flex flex-wrap gap-3">
+            <button
+              className="btn btn-ghost"
+              onClick={() => {
+                if (confirm('Sign out of this device? Your local progress stays saved.')) {
+                  useApp.getState().signOut();
+                  window.location.href = '/';
+                }
+              }}
+            >
+              Sign out
+            </button>
+            <button
+              className="btn btn-ghost"
+              onClick={() => {
+                if (confirm('Reset all local progress? This cannot be undone.')) reset();
+              }}
+            >
+              Reset progress
+            </button>
+          </div>
         </div>
       </section>
     </div>

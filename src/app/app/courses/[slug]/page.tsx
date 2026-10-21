@@ -8,7 +8,6 @@ import { lessonsForCourse } from '@/content/psychology';
 import { useApp, levelTitle, nextLevel } from '@/lib/store';
 import { SectionLabel, ProgressRing, PillTag, Arrow, TwoToneHeadline } from '@/components/ui';
 import { CourseCalendar } from '@/components/calendar';
-import { Illustration } from '@/components/illustrations';
 
 export default function CoursePage({ params }: { params: { slug: string } }) {
   const { slug } = params;
@@ -140,7 +139,11 @@ function CourseView({ slug }: { slug: string }) {
       {/* Weekly rhythm */}
       <section className="rounded-card p-8" style={{ background: 'var(--mist)' }}>
         <div className="flex flex-col gap-8 md:flex-row md:items-center">
-          <Illustration name="loop" size={120} />
+          <img
+            src="/images/learn-2.jpg"
+            alt="A learner following the weekly rhythm"
+            className="h-40 w-full rounded-[12px] object-cover md:h-[180px] md:w-[220px]"
+          />
           <div>
             <h3 className="t-h4">The weekly rhythm</h3>
             <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">

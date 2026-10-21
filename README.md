@@ -10,15 +10,21 @@ system, Manrope + Inter).
 
 ## What's here
 
-**Marketing landing page** (`/`) — editorial layout derived from the reference design:
-hero with ink gradient overlay, about + stat band (Mist / Indigo / Amber), course rows,
-mentor photo strip, dark statement band, how-it-works, testimonial pager, photo mosaic,
-newsletter, and footer.
+**Landing page** (`/`) — information only: what the academy is, course overviews and
+lists with real photography, mentors, how-it-works, testimonials, and a newsletter.
+No learning happens here.
+
+**Local profiles (v1)** — anyone who wants to engage with a course (enroll / start)
+gets a **sign up / sign in pop-up** first. Profiles are stored in the browser
+(localStorage) with hashed passwords — no server, no accounts database. Google
+sign-in and cloud sync are planned for v3. The learning app (`/app`) is gated: no
+profile → redirected to `/auth`.
 
 **Learning app** (`/app`)
 
-- **Academy Home** — greeting, global streak chip, Today card (next lesson + progress
-  ring), course catalog with Enrolled / Available / Coming Soon states.
+- **Academy Home** — greeting, global streak chip, Today card (next lesson + course
+  photo + progress ring), course catalog with photo cards and
+  Enrolled / Available / Coming Soon states.
 - **Course page** (`/app/courses/psychology`) — month-by-month outline with month accent
   colors, day calendar (done / today / missed / rest / locked / shared states), and
   Continue CTA.
@@ -34,23 +40,24 @@ newsletter, and footer.
   **rest days** (Sunday) — calm screen with "Tick rest".
 - **History** — every completed day across courses, scores, shares, weak topics.
 - **Profile** — name, XP, level titles (Observer → Analyst → Reader → Strategist →
-  Expert), theme preference (light / dark / system), local reset.
+  Expert), theme preference (light / dark / system), sign out, local reset.
 
 ## Stack
 
 - Next.js 14 (App Router) + TypeScript
 - Tailwind CSS 3 with the style-guide tokens as CSS variables (`[data-theme="dark"]`)
-- Zustand + `persist` for local-first state (progress, XP, streak, shares)
-- Framer Motion-ready motion system (CSS transitions per the style guide durations)
-- Lucide icons, flat-vector SVG illustrations, `html-to-image` for PNG export
+- Zustand + `persist` for local-first state (accounts, progress, XP, streak, shares)
+- Lucide icons, `html-to-image` for PNG export
 - Fonts bundled via `@fontsource` (Manrope 300/400/600, Inter 400/500/600)
+- Photography on all cards; flat-vector illustrations only where the style guide
+  calls for them (rest-day screen)
 
 ## Run it
 
 ```bash
 npm install
 npm run dev      # http://localhost:3000
-npm run build    # production build
+npm run build    # production build (stop the dev server first — they share .next)
 ```
 
 ## Content
@@ -66,8 +73,9 @@ follow the same weekly template and are outlined on the course page.
 
 ## Notes
 
-- Auth and cloud sync (Supabase) are scaffolded in the data model but not wired —
-  progress is stored on-device for now, matching the MVP "real accounts later" note.
+- Profiles and progress live in this browser only (v1). When v3 lands, local accounts
+  migrate to Google sign-in + Supabase sync.
 - Video days use a curated link-out placeholder (the PRD's embed-vs-linkout question is
   still open).
-- Designed mobile-first; all flows work at 375px.
+- Responsive from 320px to ultrawide: cards, calendar, tables, and the Hook Card editor
+  all adapt (the hook-card preview auto-scales to the available width).

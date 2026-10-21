@@ -2,27 +2,30 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { Logo, Illustration } from './illustrations';
+import { Logo } from './illustrations';
 import { SectionLabel, TwoToneHeadline, DashMarker, Arrow } from './ui';
+import { useEngage } from './auth';
 import { psychology, comingSoon } from '@/lib/courses';
+import type { CourseConfig } from '@/lib/types';
 
 /* ============ NAV ============ */
 
 export function LandingNav() {
   const [open, setOpen] = useState(false);
+  const engage = useEngage();
   const links = [
     { href: '#about', label: 'About' },
     { href: '#courses', label: 'Courses' },
     { href: '#how', label: 'How It Works' },
-    { href: '/app', label: 'Academy' },
+    { href: '#mentors', label: 'Mentors' },
   ];
   return (
     <header className="absolute inset-x-0 top-0 z-30">
-      <div className="container-x flex items-center justify-between py-6">
+      <div className="container-x flex items-center justify-between py-5 md:py-6">
         <Link href="/" aria-label="Uneek Academy home">
           <Logo light />
         </Link>
-        <nav className="hidden items-center gap-9 md:flex">
+        <nav className="hidden items-center gap-9 lg:flex">
           {links.map((l) => (
             <a
               key={l.label}
@@ -34,9 +37,9 @@ export function LandingNav() {
           ))}
         </nav>
         <div className="hidden md:block">
-          <Link href="/app" className="btn btn-white">
+          <button className="btn btn-white" onClick={() => engage({ kind: 'navigate', href: '/app' })}>
             Get Started
-          </Link>
+          </button>
         </div>
         <button
           className="t-label text-white md:hidden"
@@ -54,9 +57,15 @@ export function LandingNav() {
               {l.label}
             </a>
           ))}
-          <Link href="/app" className="btn btn-white w-fit" onClick={() => setOpen(false)}>
+          <button
+            className="btn btn-white w-fit"
+            onClick={() => {
+              setOpen(false);
+              engage({ kind: 'navigate', href: '/app' });
+            }}
+          >
             Get Started
-          </Link>
+          </button>
         </div>
       )}
     </header>
@@ -66,8 +75,9 @@ export function LandingNav() {
 /* ============ HERO ============ */
 
 export function Hero() {
+  const engage = useEngage();
   return (
-    <section className="relative min-h-[720px] w-full overflow-hidden md:min-h-[820px]">
+    <section className="relative min-h-[640px] w-full overflow-hidden sm:min-h-[720px] md:min-h-[820px]">
       <img
         src="/images/hero.jpg"
         alt="A learner studying at a sunlit desk"
@@ -77,11 +87,11 @@ export function Hero() {
         className="absolute inset-0"
         style={{
           background:
-            'linear-gradient(to top, rgba(15,18,38,.82) 0%, rgba(15,18,38,.45) 38%, rgba(15,18,38,0) 68%)',
+            'linear-gradient(to top, rgba(15,18,38,.85) 0%, rgba(15,18,38,.45) 38%, rgba(15,18,38,0) 68%)',
         }}
       />
-      <div className="container-x relative flex min-h-[720px] flex-col justify-end pb-16 pt-32 md:min-h-[820px] md:pb-20">
-        <div className="flex flex-col gap-10 md:flex-row md:items-end md:justify-between">
+      <div className="container-x relative flex min-h-[640px] flex-col justify-end pb-12 pt-32 sm:min-h-[720px] md:min-h-[820px] md:pb-20">
+        <div className="flex flex-col gap-8 md:flex-row md:items-end md:justify-between md:gap-10">
           <div className="max-w-2xl">
             <DashMarker />
             <h1 className="t-display text-white">
@@ -89,15 +99,18 @@ export function Hero() {
               <br />
               Shouldn’t Be Boring
             </h1>
-            <p className="t-body-l mt-6 max-w-md text-white/85">
+            <p className="t-body-l mt-5 max-w-md text-white/85 md:mt-6">
               Short daily lessons, real psychological insight, and a rhythm you can
               actually keep. One small step a day — visibly tracked.
             </p>
           </div>
           <div className="shrink-0">
-            <Link href="/app" className="btn btn-white">
+            <button
+              className="btn btn-white"
+              onClick={() => engage({ kind: 'enroll', slug: 'psychology' })}
+            >
               Start Course <Arrow />
-            </Link>
+            </button>
           </div>
         </div>
       </div>
@@ -111,7 +124,7 @@ export function AboutStats() {
   return (
     <section id="about" className="section-pad">
       <div className="container-x">
-        <div className="grid gap-10 md:grid-cols-12">
+        <div className="grid gap-8 md:grid-cols-12 md:gap-10">
           <div className="md:col-span-3">
             <SectionLabel>About us</SectionLabel>
           </div>
@@ -125,8 +138,8 @@ export function AboutStats() {
         </div>
 
         {/* Stat band: photo + Mist / Indigo / Amber blocks */}
-        <div className="mt-16 grid overflow-hidden md:grid-cols-2">
-          <div className="min-h-[320px]">
+        <div className="mt-12 grid overflow-hidden md:mt-16 md:grid-cols-2">
+          <div className="min-h-[240px] sm:min-h-[320px]">
             <img
               src="/images/about.jpg"
               alt="A learner in an online class"
@@ -176,7 +189,7 @@ function StatBlock({
   text: string;
 }) {
   return (
-    <div className="flex flex-col gap-4 p-8 md:flex-row md:items-start md:gap-10 md:p-10" style={{ background: bg, color: fg }}>
+    <div className="flex flex-col gap-3 p-7 sm:gap-4 md:flex-row md:items-start md:gap-10 md:p-10" style={{ background: bg, color: fg }}>
       <div className="md:w-40">
         <div className="t-stat">{num}</div>
         <div className="t-small mt-1" style={{ opacity: 0.85 }}>
@@ -190,39 +203,41 @@ function StatBlock({
   );
 }
 
-/* ============ COURSES ============ */
+/* ============ COURSES (overview cards with photography) ============ */
 
 export function CoursesSection() {
+  const engage = useEngage();
   return (
     <section id="courses" className="section-pad">
-      <div className="container-x grid gap-12 md:grid-cols-12">
-        <div className="md:col-span-4">
-          <SectionLabel>Courses</SectionLabel>
-          <TwoToneHeadline line1="Courses That" line2="Open Your Future" />
-          <p className="t-body mt-6" style={{ color: 'var(--muted)' }}>
-            Explore skills from psychology to personal growth — each program paced
-            one small lesson at a time, with exercises that make it stick.
-          </p>
-          <Link href="/app" className="btn btn-ghost mt-8">
-            Learn more
-          </Link>
+      <div className="container-x">
+        <div className="grid gap-8 md:grid-cols-12 md:gap-10">
+          <div className="md:col-span-4">
+            <SectionLabel>Courses</SectionLabel>
+            <TwoToneHeadline line1="Courses That" line2="Open Your Future" />
+          </div>
+          <div className="md:col-span-8 md:pt-2">
+            <p className="t-body-l max-w-2xl" style={{ color: 'var(--muted)' }}>
+              Structured daily programs — each one paced a single small lesson at a
+              time, with exercises, weekly reviews, and shareable takeaways. Browse
+              the overviews below; create your profile when you are ready to start.
+            </p>
+          </div>
         </div>
-        <div className="md:col-span-8">
-          <CourseRow
-            title={psychology.title}
-            meta="26 weeks · 130 lessons · Beginner to advanced"
-            desc={psychology.tagline}
-            status="Enrolling now"
-            href="/app/courses/psychology"
+
+        <div className="mt-12 grid gap-x-8 gap-y-14 sm:grid-cols-2 lg:mt-16 lg:grid-cols-3">
+          <CourseOverviewCard
+            course={psychology}
+            highlights={psychology.months.map((m) => m.title)}
+            cta="Enroll now"
+            onCta={() => engage({ kind: 'enroll', slug: 'psychology' })}
           />
           {comingSoon.map((c) => (
-            <CourseRow
+            <CourseOverviewCard
               key={c.slug}
-              title={c.title}
-              meta={`${c.totalWeeks} weeks · ${Math.round(c.totalDays * 0.72)} lessons · ${c.level}`}
-              desc={c.tagline}
-              status="Coming soon"
-              href="/app"
+              course={c}
+              highlights={c.months.map((m) => m.topics.split(',')[0])}
+              cta="Join the waitlist"
+              onCta={() => engage({ kind: 'navigate', href: '/app' })}
             />
           ))}
         </div>
@@ -231,39 +246,55 @@ export function CoursesSection() {
   );
 }
 
-function CourseRow({
-  title,
-  meta,
-  desc,
-  status,
-  href,
+function CourseOverviewCard({
+  course,
+  highlights,
+  cta,
+  onCta,
 }: {
-  title: string;
-  meta: string;
-  desc: string;
-  status: string;
-  href: string;
+  course: CourseConfig;
+  highlights: string[];
+  cta: string;
+  onCta: () => void;
 }) {
+  const live = course.status === 'live';
   return (
-    <div className="border-t border-line py-8 first:border-t-0 first:pt-0">
-      <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
-        <div className="max-w-xl">
-          <h3 className="t-h4">{title}</h3>
-          <p className="t-small mt-1.5" style={{ color: 'var(--muted)' }}>
-            {meta}
-          </p>
-          <p className="t-body mt-3">{desc}</p>
-        </div>
-        <div className="flex items-center gap-5">
-          <span className="t-label whitespace-nowrap" style={{ color: 'var(--muted)' }}>
-            {status}
-          </span>
-          <Link href={href} className="btn btn-primary">
-            {status === 'Enrolling now' ? 'Enroll' : 'Notify me'} <Arrow />
-          </Link>
-        </div>
+    <article className="flex flex-col">
+      <div className="relative overflow-hidden">
+        <img
+          src={course.coverImage}
+          alt={course.title}
+          className="aspect-[4/3] w-full object-cover tr-standard hover:scale-[1.02]"
+        />
+        <span
+          className="absolute left-4 top-4 rounded-full px-3 py-1.5 t-label"
+          style={{
+            background: live ? 'var(--primary)' : 'rgba(15,18,38,.72)',
+            color: live ? '#fff' : '#fff',
+          }}
+        >
+          {live ? 'Enrolling now' : 'Coming soon'}
+        </span>
       </div>
-    </div>
+      <h3 className="t-h4 mt-5">{course.title}</h3>
+      <p className="t-small mt-1.5" style={{ color: 'var(--muted)' }}>
+        {course.totalWeeks} weeks · {course.level}
+      </p>
+      <p className="t-body mt-3">{course.tagline}</p>
+      <ul className="mt-4 space-y-2 border-t border-line pt-4">
+        {highlights.slice(0, 4).map((h) => (
+          <li key={h} className="flex gap-2.5 t-small" style={{ color: 'var(--muted)' }}>
+            <span className="mt-[9px] h-1 w-1 shrink-0 rounded-full" style={{ background: 'var(--primary)' }} />
+            {h}
+          </li>
+        ))}
+      </ul>
+      <div className="mt-6">
+        <button className="btn btn-primary w-full sm:w-auto" onClick={onCta}>
+          {cta} <Arrow />
+        </button>
+      </div>
+    </article>
   );
 }
 
@@ -278,21 +309,21 @@ const mentors = [
 
 export function MentorsSection() {
   return (
-    <section className="section-pad">
+    <section id="mentors" className="section-pad">
       <div className="container-x">
-        <div className="grid gap-10 md:grid-cols-12">
+        <div className="grid gap-8 md:grid-cols-12 md:gap-10">
           <div className="md:col-span-7">
             <SectionLabel>Mentor</SectionLabel>
             <TwoToneHeadline line1="Learn From" line2="Experienced Mentors" />
           </div>
-          <div className="md:col-span-5 md:pt-20">
+          <div className="md:col-span-5 md:pt-16 lg:pt-20">
             <p className="t-body" style={{ color: 'var(--muted)' }}>
               Mentors are industry experts and guides who bring real-world experience
               into every lesson — so what you learn works outside the screen.
             </p>
           </div>
         </div>
-        <div className="mt-14 grid grid-cols-2 gap-px bg-line md:grid-cols-4">
+        <div className="mt-10 grid grid-cols-2 gap-px bg-line md:mt-14 md:grid-cols-4">
           {mentors.map((m) => (
             <figure key={m.name} className="group relative bg-bg">
               <img
@@ -300,7 +331,7 @@ export function MentorsSection() {
                 alt={`${m.name}, ${m.role}`}
                 className="aspect-[3/4] w-full object-cover"
               />
-              <figcaption className="p-5">
+              <figcaption className="p-4 sm:p-5">
                 <div className="t-h4">{m.name}</div>
                 <div className="t-small mt-0.5" style={{ color: 'var(--muted)' }}>
                   {m.role}
@@ -317,16 +348,20 @@ export function MentorsSection() {
 /* ============ DARK STATEMENT BAND ============ */
 
 export function StatementBand() {
+  const engage = useEngage();
   return (
     <section style={{ background: 'var(--ink)' }}>
-      <div className="container-x flex flex-col items-start gap-8 py-14 md:flex-row md:items-center md:justify-between md:py-16">
+      <div className="container-x flex flex-col items-start gap-7 py-12 md:flex-row md:items-center md:justify-between md:gap-10 md:py-16">
         <p className="t-body-l max-w-3xl text-white">
           Interactive lessons and real projects build your knowledge and confidence.
           Start small, go at your pace, and watch your progress grow.
         </p>
-        <Link href="/app" className="btn btn-white shrink-0">
+        <button
+          className="btn btn-white shrink-0"
+          onClick={() => engage({ kind: 'enroll', slug: 'psychology' })}
+        >
           Start today
-        </Link>
+        </button>
       </div>
     </section>
   );
@@ -335,15 +370,17 @@ export function StatementBand() {
 /* ============ HOW IT WORKS ============ */
 
 export function HowItWorks() {
+  const engage = useEngage();
   return (
     <section id="how" className="section-pad">
-      <div className="container-x grid items-center gap-12 md:grid-cols-2">
+      <div className="container-x grid items-center gap-10 md:grid-cols-2 md:gap-12">
         <div>
           <SectionLabel>How It Works</SectionLabel>
           <TwoToneHeadline line1="How You’ll" line2="Learn With Us" />
           <ul className="mt-8 space-y-5">
             {[
               ['Browse the library', 'Choose a course that fits your goal — psychology is live now, with more on the way.'],
+              ['Create your profile', 'Sign up once in this browser — your streak, XP, and progress stay with you.'],
               ['Learn one day at a time', 'Access lessons anywhere. Flexible schedules and small steps keep you consistent.'],
               ['Apply what you learn', 'Exercises, weekly reviews, and shareable hook cards turn insight into habit.'],
             ].map(([t, d]) => (
@@ -358,9 +395,12 @@ export function HowItWorks() {
               </li>
             ))}
           </ul>
-          <Link href="/app" className="btn btn-primary mt-9">
+          <button
+            className="btn btn-primary mt-8 md:mt-9"
+            onClick={() => engage({ kind: 'enroll', slug: 'psychology' })}
+          >
             Start Course <Arrow />
-          </Link>
+          </button>
         </div>
         <div>
           <img
@@ -458,9 +498,13 @@ export function Newsletter() {
   const [done, setDone] = useState(false);
   return (
     <section className="section-pad">
-      <div className="container-x grid items-center gap-12 md:grid-cols-2">
+      <div className="container-x grid items-center gap-10 md:grid-cols-2 md:gap-12">
         <div className="flex justify-center">
-          <Illustration name="hook" size={220} />
+          <img
+            src="/images/course-communication.jpg"
+            alt="A learner sharing an idea with colleagues"
+            className="aspect-[4/3] w-full max-w-md object-cover"
+          />
         </div>
         <div>
           <h2 className="t-h2">
@@ -495,7 +539,7 @@ export function Newsletter() {
                 <Arrow />
               </button>
             </div>
-            <p className="t-small mt-3" style={{ color: done ? 'var(--success)' : 'var(--muted)' }}>
+            <p className="t-small mt-3" style={{ color: done ? '#12B886' : 'var(--muted)' }}>
               {done
                 ? 'You’re on the list. Welcome to Uneek Academy.'
                 : 'One thoughtful email a week. No noise.'}
@@ -519,8 +563,8 @@ const footerCols: { title: string; links: string[] }[] = [
 export function Footer() {
   return (
     <footer style={{ background: 'var(--ink)' }}>
-      <div className="container-x py-16">
-        <div className="grid gap-12 md:grid-cols-12">
+      <div className="container-x py-12 md:py-16">
+        <div className="grid gap-10 sm:grid-cols-2 md:grid-cols-12 md:gap-12">
           <div className="md:col-span-3">
             <Logo light />
             <div className="t-small mt-6 space-y-1" style={{ color: '#A3A8C7' }}>
@@ -544,7 +588,7 @@ export function Footer() {
             </div>
           ))}
         </div>
-        <div className="mt-14 border-t pt-8" style={{ borderColor: 'rgba(163,168,199,.2)' }}>
+        <div className="mt-12 border-t pt-8 md:mt-14" style={{ borderColor: 'rgba(163,168,199,.2)' }}>
           <p className="t-small" style={{ color: 'rgba(163,168,199,.6)' }}>
             © 2026 Uneek Academy. All Rights Reserved.
           </p>

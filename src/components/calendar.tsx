@@ -32,7 +32,7 @@ export function CourseCalendar({
             </h3>
             <Legend />
           </div>
-          <div className="grid grid-cols-7 gap-2">
+          <div className="grid grid-cols-7 gap-1 sm:gap-2">
             {items.map((l) => (
               <DayCell
                 key={l.dayIndex}
@@ -88,7 +88,7 @@ function DayCell({
 
   const inner = (
     <div
-      className={`relative flex aspect-square flex-col items-center justify-center gap-1 rounded-[10px] tr-micro hover:opacity-85 ${cls}`}
+      className={`relative flex aspect-square flex-col items-center justify-center gap-0.5 rounded-[10px] tr-micro hover:opacity-85 sm:gap-1 ${cls}`}
       title={`Day ${lesson.dayIndex}: ${lesson.title}`}
     >
       {progress?.shared && (
@@ -99,7 +99,7 @@ function DayCell({
         />
       )}
       {icon}
-      <span className="text-[11px] font-medium leading-none">{lesson.dayIndex}</span>
+      <span className="text-[10px] font-medium leading-none sm:text-[11px]">{lesson.dayIndex}</span>
     </div>
   );
 

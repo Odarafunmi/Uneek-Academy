@@ -81,8 +81,8 @@ export default function HistoryPage() {
             </Link>
           </div>
         ) : (
-          <div className="mt-5 overflow-hidden rounded-card border border-line">
-            <table className="w-full text-left">
+          <div className="mt-5 overflow-x-auto rounded-card border border-line">
+            <table className="w-full min-w-[640px] text-left">
               <thead>
                 <tr style={{ background: 'var(--mist)' }}>
                   {['Day', 'Lesson', 'Type', 'Score', 'Date', 'Shared'].map((h) => (

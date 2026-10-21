@@ -21,17 +21,72 @@ function daysBetween(a: string, b: string): number {
   return Math.round((new Date(b).getTime() - new Date(a).getTime()) / 86400000);
 }
 
-export interface AppState {
-  hydrated: boolean;
-  theme: ThemePref;
+/* ---------- local account (device-only for now; Google sign-in at v3) ---------- */
+
+export interface LocalAccount {
+  name: string;
+  email: string;
+  /** SHA-256 (with per-email salt) — never a plaintext password */
+  passwordHash: string;
+  createdAt: string;
+}
+
+export interface AccountData {
   profile: UserProfile | null;
   enrolled: Record<string, { startDate: string }>;
   progress: Record<string, CourseProgress>;
   streak: { current: number; longest: number; lastActiveDate: string | null };
   restTicks: string[];
-  /** wrong-answer queue: concept names flagged during quizzes */
+  weakConcepts: Record<string, string[]>;
+}
+
+async function hashPassword(email: string, password: string): Promise<string> {
+  const input = new TextEncoder().encode(`uneek::${email.toLowerCase()}::${password}`);
+  if (typeof crypto !== 'undefined' && crypto.subtle?.digest) {
+    const buf = await crypto.subtle.digest('SHA-256', input);
+    return Array.from(new Uint8Array(buf))
+      .map((b) => b.toString(16).padStart(2, '0'))
+      .join('');
+  }
+  // Non-crypto fallback (non-secure contexts only)
+  let h = 5381;
+  for (let i = 0; i < input.length; i++) h = ((h << 5) + h + input[i]) >>> 0;
+  return `f${h.toString(16)}`;
+}
+
+export type AuthIntent =
+  | { kind: 'enroll'; slug: string }
+  | { kind: 'navigate'; href: string }
+  | null;
+
+export interface AppState {
+  hydrated: boolean;
+  theme: ThemePref;
+
+  /* auth (local) */
+  account: LocalAccount | null;
+  accounts: Record<string, LocalAccount>;
+  accountData: Record<string, AccountData>;
+  authOpen: boolean;
+  authMode: 'signup' | 'signin';
+  authIntent: AuthIntent;
+
+  /* working data for the signed-in account (flat for simple reads) */
+  profile: UserProfile | null;
+  enrolled: Record<string, { startDate: string }>;
+  progress: Record<string, CourseProgress>;
+  streak: { current: number; longest: number; lastActiveDate: string | null };
+  restTicks: string[];
   weakConcepts: Record<string, string[]>;
 
+  /* auth actions */
+  signUp: (name: string, email: string, password: string) => Promise<string | null>;
+  signIn: (email: string, password: string) => Promise<string | null>;
+  signOut: () => void;
+  openAuth: (mode?: 'signup' | 'signin', intent?: AuthIntent) => void;
+  closeAuth: () => void;
+
+  /* course actions */
   setTheme: (t: ThemePref) => void;
   setProfile: (p: UserProfile) => void;
   enroll: (courseSlug: string) => void;
@@ -63,17 +118,99 @@ function touchStreak(streak: AppState['streak']) {
   };
 }
 
+function snapshot(s: AppState): AccountData {
+  return {
+    profile: s.profile,
+    enrolled: s.enrolled,
+    progress: s.progress,
+    streak: s.streak,
+    restTicks: s.restTicks,
+    weakConcepts: s.weakConcepts,
+  };
+}
+
+function blankData(): AccountData {
+  return {
+    profile: null,
+    enrolled: {},
+    progress: {},
+    streak: { current: 0, longest: 0, lastActiveDate: null },
+    restTicks: [],
+    weakConcepts: {},
+  };
+}
+
 export const useApp = create<AppState>()(
   persist(
     (set, get) => ({
       hydrated: false,
       theme: 'system',
-      profile: null,
-      enrolled: {},
-      progress: {},
-      streak: { current: 0, longest: 0, lastActiveDate: null },
-      restTicks: [],
-      weakConcepts: {},
+      account: null,
+      accounts: {},
+      accountData: {},
+      authOpen: false,
+      authMode: 'signup',
+      authIntent: null,
+      ...blankData(),
+
+      openAuth: (mode = 'signup', intent = null) =>
+        set({ authOpen: true, authMode: mode, authIntent: intent }),
+      closeAuth: () => set({ authOpen: false, authIntent: null }),
+
+      signUp: async (name, email, password) => {
+        const key = email.trim().toLowerCase();
+        if (!name.trim()) return 'Please enter your name.';
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(key)) return 'Please enter a valid email.';
+        if (password.length < 6) return 'Password needs at least 6 characters.';
+        const s = get();
+        if (s.accounts[key]) return 'An account already exists for this email — sign in instead.';
+        const account: LocalAccount = {
+          name: name.trim(),
+          email: key,
+          passwordHash: await hashPassword(key, password),
+          createdAt: todayKey(),
+        };
+        // First signup on this device adopts any existing local progress.
+        const data = snapshot(s);
+        set({
+          accounts: { ...s.accounts, [key]: account },
+          accountData: { ...s.accountData, [key]: data },
+          account,
+          authOpen: false,
+          authIntent: null,
+          profile: data.profile ?? { name: account.name, joinedAt: account.createdAt },
+        });
+        return null;
+      },
+
+      signIn: async (email, password) => {
+        const key = email.trim().toLowerCase();
+        const s = get();
+        const account = s.accounts[key];
+        if (!account) return 'No local account for this email — sign up instead.';
+        const hash = await hashPassword(key, password);
+        if (hash !== account.passwordHash) return 'That password does not match.';
+        // Stash current working data under the outgoing account, then load the new one.
+        const accountData = { ...s.accountData };
+        if (s.account) accountData[s.account.email] = snapshot(s);
+        const data = accountData[key] ?? blankData();
+        set({
+          account,
+          accountData: { ...accountData, [key]: data },
+          ...data,
+          profile: data.profile ?? { name: account.name, joinedAt: account.createdAt },
+          authOpen: false,
+          authIntent: null,
+        });
+        return null;
+      },
+
+      signOut: () => {
+        const s = get();
+        const accountData = { ...s.accountData };
+        if (s.account) accountData[s.account.email] = snapshot(s);
+        set({ account: null, accountData, authOpen: false });
+      },
 
       setTheme: (theme) => set({ theme }),
       setProfile: (profile) => set({ profile }),
@@ -161,13 +298,18 @@ export const useApp = create<AppState>()(
         })),
 
       reset: () =>
-        set({
-          profile: null,
-          enrolled: {},
-          progress: {},
-          streak: { current: 0, longest: 0, lastActiveDate: null },
-          restTicks: [],
-          weakConcepts: {},
+        set((s) => {
+          const accountData = { ...s.accountData };
+          if (s.account) accountData[s.account.email] = blankData();
+          return {
+            accountData,
+            profile: s.account ? { name: s.account.name, joinedAt: s.account.createdAt } : null,
+            enrolled: {},
+            progress: {},
+            streak: { current: 0, longest: 0, lastActiveDate: null },
+            restTicks: [],
+            weakConcepts: {},
+          };
         }),
     }),
     {
@@ -175,6 +317,9 @@ export const useApp = create<AppState>()(
       storage: createJSONStorage(() => localStorage),
       partialize: (s) => ({
         theme: s.theme,
+        account: s.account,
+        accounts: s.accounts,
+        accountData: s.accountData,
         profile: s.profile,
         enrolled: s.enrolled,
         progress: s.progress,

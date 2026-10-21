@@ -77,6 +77,7 @@ export const psychology: CourseConfig = {
   ],
   status: 'live',
   coverIllustration: 'brain',
+  coverImage: '/images/course-psychology.jpg',
 };
 
 export const comingSoon: CourseConfig[] = [
@@ -105,6 +106,7 @@ export const comingSoon: CourseConfig[] = [
     ],
     status: 'coming_soon',
     coverIllustration: 'speech',
+    coverImage: '/images/course-communication.jpg',
   },
   {
     slug: 'finance',
@@ -131,6 +133,7 @@ export const comingSoon: CourseConfig[] = [
     ],
     status: 'coming_soon',
     coverIllustration: 'coins',
+    coverImage: '/images/course-finance.jpg',
   },
 ];
 

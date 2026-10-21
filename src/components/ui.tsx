@@ -117,7 +117,7 @@ export function StreakChip({ days, light = false }: { days: number; light?: bool
     >
       <FlameIcon />
       <span style={{ fontWeight: 600 }}>{days}</span>
-      <span style={{ opacity: 0.75 }}>day streak</span>
+      <span className="hidden sm:inline" style={{ opacity: 0.75 }}>day streak</span>
     </span>
   );
 }

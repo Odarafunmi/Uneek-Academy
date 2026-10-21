@@ -98,6 +98,8 @@ export interface CourseConfig {
   months: CourseMonth[];
   status: 'live' | 'coming_soon';
   coverIllustration: string;
+  /** realistic cover photography used on course cards */
+  coverImage: string;
 }
 
 export interface DayProgress {

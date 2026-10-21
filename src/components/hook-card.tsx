@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { toPng } from 'html-to-image';
 import { Download, Copy, Check } from 'lucide-react';
 import type { LessonShare } from '@/lib/types';
@@ -31,6 +31,22 @@ export function HookCardEditor({
   const [copied, setCopied] = useState(false);
   const [exporting, setExporting] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
+  const wrapRef = useRef<HTMLDivElement>(null);
+  // preview display scale: fit the 1080px-wide card to whatever space is available
+  const [previewScale, setPreviewScale] = useState(0.32);
+
+  useEffect(() => {
+    const el = wrapRef.current;
+    if (!el) return;
+    const fit = () => {
+      const w = el.clientWidth || 340;
+      setPreviewScale(Math.min(0.38, Math.max(0.16, (w - 4) / 1080)));
+    };
+    fit();
+    const ro = new ResizeObserver(fit);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
 
   const accentChoices = ['#4F46E5', '#8B5CF6', '#14B8A6', '#0EA5E9', '#FF7A45', '#FFB020'];
 
@@ -177,12 +193,13 @@ export function HookCardEditor({
         </div>
       </div>
 
-      {/* Live preview — card is a true 1080×1350 node, scaled down for display */}
-      <div className="flex flex-1 flex-col items-center gap-4">
+      {/* Live preview — card is a true 1080×1350 node, scaled down to fit the screen */}
+      <div className="flex min-w-0 flex-1 flex-col items-center gap-4">
         <div
+          ref={wrapRef}
+          className="w-full"
           style={{
-            width: 1080 * 0.32,
-            height: 1350 * 0.32,
+            height: 1350 * previewScale,
             overflow: 'hidden',
             borderRadius: 8,
           }}
@@ -192,7 +209,7 @@ export function HookCardEditor({
           style={{
             width: 1080,
             height: 1350,
-            transform: `scale(${0.32})`,
+            transform: `scale(${previewScale})`,
             transformOrigin: 'top left',
             background: dark ? '#0F1226' : '#F5F6FB',
             color: dark ? '#FFFFFF' : '#0F1226',

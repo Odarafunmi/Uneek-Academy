@@ -404,11 +404,26 @@ function VideoCard() {
   return (
     <div>
       <PillTag tone="tint">Video lesson</PillTag>
-      <div
-        className="mt-5 flex aspect-video w-full items-center justify-center rounded-[12px]"
-        style={{ background: 'var(--ink)' }}
-      >
-        <Illustration name="brain" size={130} />
+      <div className="relative mt-5 aspect-video w-full overflow-hidden rounded-[12px]">
+        <img
+          src="/images/video-still.jpg"
+          alt="A learner taking notes during a video lesson"
+          className="absolute inset-0 h-full w-full object-cover"
+        />
+        <div
+          className="absolute inset-0 flex items-center justify-center"
+          style={{ background: 'rgba(15,18,38,.25)' }}
+        >
+          <span
+            className="flex h-16 w-16 items-center justify-center rounded-full"
+            style={{ background: 'rgba(255,255,255,.92)' }}
+            aria-hidden="true"
+          >
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="#0F1226">
+              <path d="M8 5.5v13l11-6.5z" />
+            </svg>
+          </span>
+        </div>
       </div>
       <div className="mt-5 flex flex-wrap items-center justify-between gap-4">
         <p className="t-small max-w-md" style={{ color: 'var(--muted)' }}>
@@ -416,8 +431,7 @@ function VideoCard() {
           button opens a curated search for the topic.)
         </p>
         <a
-          className="btn btn-white border border-line"
-          style={{ background: 'var(--mist)', color: 'var(--text)' }}
+          className="btn btn-ghost"
           href="https://www.youtube.com/results?search_query=psychology+explained"
           target="_blank"
           rel="noopener noreferrer"

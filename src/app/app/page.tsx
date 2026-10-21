@@ -6,7 +6,6 @@ import { useApp, levelTitle, nextLevel } from '@/lib/store';
 import { psychology, comingSoon, accentForMonth } from '@/lib/courses';
 import { lessonForDay, lessonsForCourse } from '@/content/psychology';
 import { SectionLabel, ProgressRing, StreakChip, PillTag, Arrow } from '@/components/ui';
-import { Illustration } from '@/components/illustrations';
 import type { CourseConfig, Lesson } from '@/lib/types';
 
 export default function AcademyHome() {
@@ -47,8 +46,12 @@ export default function AcademyHome() {
         <h2 className="t-h3">Today</h2>
         {enrolledCourses.length === 0 ? (
           <div className="mt-5 rounded-card border border-line p-10 text-center">
-            <Illustration name="brain" size={110} className="mx-auto" />
-            <h3 className="t-h4 mt-5">Your journey starts with one lesson</h3>
+            <img
+              src="/images/learn-1.jpg"
+              alt="Learners studying together"
+              className="mx-auto aspect-[16/9] w-full max-w-sm rounded-[12px] object-cover"
+            />
+            <h3 className="t-h4 mt-6">Your journey starts with one lesson</h3>
             <p className="t-body mx-auto mt-2 max-w-md" style={{ color: 'var(--muted)' }}>
               Enroll in a course below — the first day unlocks immediately, and every
               day after that is small enough to finish.
@@ -87,17 +90,15 @@ function TodayCard({ course }: { course: CourseConfig }) {
   const xp = progress?.xp ?? 0;
 
   return (
-    <div className="rounded-card border border-line p-6 md:p-8">
+    <div className="rounded-card border border-line p-5 sm:p-6 md:p-8">
       <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
-        <div className="flex items-start gap-5">
-          <ProgressRing
-            value={doneCount}
-            max={lessons.length}
-            size={64}
-            label={`${Math.round((doneCount / lessons.length) * 100)}%`}
-            color={accent.hex}
+        <div className="flex items-start gap-4 sm:gap-5">
+          <img
+            src={course.coverImage}
+            alt=""
+            className="hidden h-20 w-20 shrink-0 rounded-[12px] object-cover sm:block"
           />
-          <div>
+          <div className="min-w-0">
             <div className="t-label" style={{ color: 'var(--muted)' }}>
               {course.title} · Day {next.dayIndex} of {course.totalDays}
             </div>
@@ -109,12 +110,21 @@ function TodayCard({ course }: { course: CourseConfig }) {
             </div>
           </div>
         </div>
-        <Link
-          href={`/app/courses/${course.slug}/day/${next.dayIndex}`}
-          className="btn btn-primary shrink-0"
-        >
-          {doneCount === 0 ? 'Start Day 1' : 'Continue'} <Arrow />
-        </Link>
+        <div className="flex items-center gap-4">
+          <ProgressRing
+            value={doneCount}
+            max={lessons.length}
+            size={56}
+            label={`${Math.round((doneCount / lessons.length) * 100)}%`}
+            color={accent.hex}
+          />
+          <Link
+            href={`/app/courses/${course.slug}/day/${next.dayIndex}`}
+            className="btn btn-primary shrink-0"
+          >
+            {doneCount === 0 ? 'Start Day 1' : 'Continue'} <Arrow />
+          </Link>
+        </div>
       </div>
     </div>
   );
@@ -130,57 +140,68 @@ function CatalogCard({ course }: { course: CourseConfig }) {
   const accent = course.months[0]?.accent ?? '#4F46E5';
 
   return (
-    <div className="hover-lift flex flex-col rounded-card border border-line p-6">
-      <div
-        className="flex h-28 items-center justify-center rounded-[12px]"
-        style={{ background: 'var(--mist)' }}
-      >
-        <Illustration name={course.coverIllustration} size={104} />
-      </div>
-      <div className="mt-5 flex items-start justify-between gap-3">
-        <div>
-          <h3 className="t-h4">{course.title}</h3>
-          <p className="t-small mt-1" style={{ color: 'var(--muted)' }}>
-            {course.totalWeeks} weeks · {course.level}
-          </p>
-        </div>
-        <span
-          className="mt-1.5 h-3 w-3 shrink-0 rounded-full"
-          style={{ background: accent }}
-          aria-hidden="true"
+    <div className="hover-lift flex flex-col overflow-hidden rounded-card border border-line">
+      <div className="relative">
+        <img
+          src={course.coverImage}
+          alt={course.title}
+          className="aspect-[16/10] w-full object-cover"
         />
-      </div>
-      <p className="t-small mt-3 flex-1" style={{ color: 'var(--muted)' }}>
-        {course.tagline}
-      </p>
-      <div className="mt-5">
-        {!isLive ? (
-          <div className="flex items-center justify-between">
-            <PillTag tone="line">Coming soon</PillTag>
-            <button className="btn btn-ghost" disabled>
-              Notify me
-            </button>
-          </div>
-        ) : enrolled ? (
-          <div className="flex items-center justify-between">
-            <div>
-              <ProgressRing
-                value={doneCount}
-                max={Math.max(lessons.length, 1)}
-                size={44}
-                stroke={4}
-                label={`${doneCount}d`}
-              />
-            </div>
-            <Link href={`/app/courses/${course.slug}`} className="btn btn-primary">
-              Open course <Arrow />
-            </Link>
-          </div>
-        ) : (
-          <button className="btn btn-primary w-full" onClick={() => enroll(course.slug)}>
-            Enroll <Arrow />
-          </button>
+        {!isLive && (
+          <span
+            className="absolute left-3.5 top-3.5 rounded-full px-3 py-1.5 t-label"
+            style={{ background: 'rgba(15,18,38,.72)', color: '#fff' }}
+          >
+            Coming soon
+          </span>
         )}
+      </div>
+      <div className="flex flex-1 flex-col p-5 sm:p-6">
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <h3 className="t-h4">{course.title}</h3>
+            <p className="t-small mt-1" style={{ color: 'var(--muted)' }}>
+              {course.totalWeeks} weeks · {course.level}
+            </p>
+          </div>
+          <span
+            className="mt-1.5 h-3 w-3 shrink-0 rounded-full"
+            style={{ background: accent }}
+            aria-hidden="true"
+          />
+        </div>
+        <p className="t-small mt-3 flex-1" style={{ color: 'var(--muted)' }}>
+          {course.tagline}
+        </p>
+        <div className="mt-5">
+          {!isLive ? (
+            <div className="flex items-center justify-between">
+              <PillTag tone="line">Coming soon</PillTag>
+              <button className="btn btn-ghost" disabled>
+                Notify me
+              </button>
+            </div>
+          ) : enrolled ? (
+            <div className="flex items-center justify-between">
+              <div>
+                <ProgressRing
+                  value={doneCount}
+                  max={Math.max(lessons.length, 1)}
+                  size={44}
+                  stroke={4}
+                  label={`${doneCount}d`}
+                />
+              </div>
+              <Link href={`/app/courses/${course.slug}`} className="btn btn-primary">
+                Open course <Arrow />
+              </Link>
+            </div>
+          ) : (
+            <button className="btn btn-primary w-full" onClick={() => enroll(course.slug)}>
+              Enroll <Arrow />
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );

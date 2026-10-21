@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
+import { AppProviders } from '@/components/providers';
 
 export const metadata: Metadata = {
   title: 'Uneek Academy — Because Learning Shouldn’t Be Boring',
@@ -27,7 +28,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" suppressHydrationWarning>
       <body>
         <script dangerouslySetInnerHTML={{ __html: themeInit }} />
-        {children}
+        <AppProviders>{children}</AppProviders>
       </body>
     </html>
   );
