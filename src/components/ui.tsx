@@ -146,8 +146,8 @@ export function PillTag({
   const styles: Record<string, React.CSSProperties> = {
     tint: { background: 'var(--primary-tint)', color: 'var(--primary)' },
     accent: { background: 'var(--accent-tint)', color: 'var(--ink)' },
-    mint: { background: '#E3F8F0', color: '#0B7A5B' },
-    coral: { background: '#FDECEB', color: '#C4433C' },
+    mint: { background: 'var(--success-tint)', color: 'var(--success-text)' },
+    coral: { background: 'var(--danger-tint)', color: 'var(--danger-text)' },
     line: { background: 'transparent', color: 'var(--muted)', border: '1px solid var(--line)' },
   };
   return (

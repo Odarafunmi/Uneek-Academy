@@ -55,12 +55,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 <Link
                   key={l.href}
                   href={l.href}
-                  className="rounded-full px-4 py-2 t-label tr-micro"
-                  style={{
-                    background: active ? 'var(--primary-tint)' : 'transparent',
-                    color: active ? 'var(--primary)' : 'var(--muted)',
-                    fontWeight: active ? 600 : 500,
-                  }}
+                  className={`app-nav-link px-4 py-2 t-label ${active ? 'active' : ''}`}
                 >
                   {l.label}
                 </Link>
@@ -92,11 +87,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               <Link
                 key={l.href}
                 href={l.href}
-                className="whitespace-nowrap rounded-full px-3.5 py-1.5 t-label"
-                style={{
-                  background: active ? 'var(--primary-tint)' : 'transparent',
-                  color: active ? 'var(--primary)' : 'var(--muted)',
-                }}
+                className={`app-nav-link whitespace-nowrap px-3.5 py-1.5 t-label ${active ? 'active' : ''}`}
               >
                 {l.label}
               </Link>

@@ -96,22 +96,10 @@ export function Quiz({
               key={i}
               onClick={() => choose(i)}
               disabled={picked !== null}
-              className="flex w-full items-center gap-3 rounded-input border p-4 text-left t-body tr-micro"
-              style={{
-                borderColor: showCorrect
-                  ? '#12B886'
-                  : showWrong
-                    ? '#F25C54'
-                    : 'var(--line)',
-                background: showCorrect
-                  ? '#E3F8F0'
-                  : showWrong
-                    ? '#FDECEB'
-                    : isPicked
-                      ? 'var(--primary-tint)'
-                      : 'var(--bg)',
-                opacity: picked !== null && !showCorrect && !showWrong ? 0.55 : 1,
-              }}
+              className={`quiz-option flex w-full items-center gap-3 rounded-input p-4 text-left t-body ${
+                showCorrect ? 'quiz-correct' : showWrong ? 'quiz-wrong' : isPicked ? 'quiz-picked' : ''
+              }`}
+              style={{ opacity: picked !== null && !showCorrect && !showWrong ? 0.55 : 1 }}
             >
               <span
                 className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full t-label"
@@ -125,12 +113,12 @@ export function Quiz({
               </span>
               <span className="flex-1">{opt}</span>
               {showCorrect && (
-                <span className="flex items-center gap-1.5 t-label" style={{ color: '#0B7A5B' }}>
+                <span className="flex items-center gap-1.5 t-label" style={{ color: 'var(--success-text)' }}>
                   <Check size={16} strokeWidth={2.5} /> Correct
                 </span>
               )}
               {showWrong && (
-                <span className="flex items-center gap-1.5 t-label" style={{ color: '#C4433C' }}>
+                <span className="flex items-center gap-1.5 t-label" style={{ color: 'var(--danger-text)' }}>
                   <X size={16} strokeWidth={2.5} /> Not quite
                 </span>
               )}

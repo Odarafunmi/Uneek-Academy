@@ -289,7 +289,7 @@ function StepContent({
         <textarea
           rows={4}
           placeholder="Write a few lines… (private, saved to your notes)"
-          className="mt-5 w-full rounded-input border border-line bg-bg p-4 t-body outline-none focus:border-primary"
+          className="mt-5 w-full rounded-input tr-micro border border-line bg-bg p-4 t-body outline-none focus:border-primary"
           style={{ color: 'var(--text)' }}
           aria-label="Reflection"
         />
@@ -307,7 +307,7 @@ function StepContent({
         <textarea
           rows={3}
           placeholder="What happened?"
-          className="mt-3 w-full rounded-input border border-line bg-bg p-4 t-body outline-none focus:border-primary"
+          className="mt-3 w-full rounded-input tr-micro border border-line bg-bg p-4 t-body outline-none focus:border-primary"
           style={{ color: 'var(--text)' }}
           aria-label="Exercise notes"
         />

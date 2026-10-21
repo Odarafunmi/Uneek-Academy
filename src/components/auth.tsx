@@ -126,7 +126,7 @@ export function AuthForm({
       </div>
 
       {error && (
-        <p className="t-small mt-3 rounded-input p-3" style={{ background: 'var(--danger-tint)', color: '#C4433C' }} role="alert">
+        <p className="t-small mt-3 rounded-input p-3" style={{ background: 'var(--danger-tint)', color: 'var(--danger-text)' }} role="alert">
           {error}
         </p>
       )}

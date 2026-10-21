@@ -145,7 +145,7 @@ function CatalogCard({ course }: { course: CourseConfig }) {
         <img
           src={course.coverImage}
           alt={course.title}
-          className="aspect-[16/10] w-full object-cover"
+          className="zoom-on-hover aspect-[16/10] w-full object-cover"
         />
         {!isLive && (
           <span

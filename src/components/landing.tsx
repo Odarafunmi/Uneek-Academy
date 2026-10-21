@@ -30,7 +30,7 @@ export function LandingNav() {
             <a
               key={l.label}
               href={l.href}
-              className="t-label text-white/90 transition-opacity hover:opacity-70"
+              className="nav-link t-label text-white/80 hover:text-white"
             >
               {l.label}
             </a>
@@ -53,7 +53,7 @@ export function LandingNav() {
       {open && (
         <div className="container-x flex flex-col gap-4 pb-6 md:hidden">
           {links.map((l) => (
-            <a key={l.label} href={l.href} className="t-body-l text-white" onClick={() => setOpen(false)}>
+            <a key={l.label} href={l.href} className="nav-link t-body-l text-white/85 hover:text-white" onClick={() => setOpen(false)}>
               {l.label}
             </a>
           ))}
@@ -147,9 +147,11 @@ export function AboutStats() {
             />
           </div>
           <div className="flex flex-col">
+            {/* Mist block: text must follow the theme (--text), not fixed ink,
+                otherwise dark mode renders deep-navy on black */}
             <StatBlock
               bg="var(--mist)"
-              fg="var(--ink)"
+              fg="var(--text)"
               num="97%"
               label="Learner satisfaction rate"
               text="Most of our learners say the experience is engaging, effective, and genuinely worth their time."
@@ -264,7 +266,7 @@ function CourseOverviewCard({
         <img
           src={course.coverImage}
           alt={course.title}
-          className="aspect-[4/3] w-full object-cover tr-standard hover:scale-[1.02]"
+          className="zoom-on-hover aspect-[4/3] w-full object-cover"
         />
         <span
           className="absolute left-4 top-4 rounded-full px-3 py-1.5 t-label"
@@ -326,11 +328,13 @@ export function MentorsSection() {
         <div className="mt-10 grid grid-cols-2 gap-px bg-line md:mt-14 md:grid-cols-4">
           {mentors.map((m) => (
             <figure key={m.name} className="group relative bg-bg">
-              <img
-                src={m.img}
-                alt={`${m.name}, ${m.role}`}
-                className="aspect-[3/4] w-full object-cover"
-              />
+              <div className="overflow-hidden">
+                <img
+                  src={m.img}
+                  alt={`${m.name}, ${m.role}`}
+                  className="zoom-on-hover aspect-[3/4] w-full object-cover"
+                />
+              </div>
               <figcaption className="p-4 sm:p-5">
                 <div className="t-h4">{m.name}</div>
                 <div className="t-small mt-0.5" style={{ color: 'var(--muted)' }}>
@@ -532,8 +536,8 @@ export function Newsletter() {
               />
               <button
                 type="submit"
-                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full tr-micro hover:opacity-80"
-                style={{ background: 'var(--primary)', color: '#fff' }}
+                className="icon-btn flex h-10 w-10 shrink-0 items-center justify-center rounded-full"
+                style={{ background: 'var(--primary)', color: 'var(--on-primary)' }}
                 aria-label="Subscribe"
               >
                 <Arrow />
@@ -579,7 +583,7 @@ export function Footer() {
               <ul className="mt-4 space-y-2.5">
                 {col.links.map((l) => (
                   <li key={l}>
-                    <a href="#" className="t-small transition-opacity hover:opacity-70" style={{ color: '#A3A8C7' }}>
+                    <a href="#" className="t-small tr-micro hover:text-white" style={{ color: '#A3A8C7' }}>
                       {l}
                     </a>
                   </li>

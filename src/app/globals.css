@@ -24,8 +24,11 @@
   --accent-tint: #fff4dc;
   --success: #12b886;
   --success-tint: #e3f8f0;
+  --success-text: #0b7a5b;
   --danger: #f25c54;
   --danger-tint: #fdeceb;
+  --danger-text: #c4433c;
+  --on-primary: #ffffff;
   --radius-pill: 999px;
   --radius-card: 16px;
   --radius-input: 12px;
@@ -43,6 +46,11 @@
   --primary: #8b85ff;
   --primary-deep: #a19cff;
   --primary-tint: #1d2147;
+  --success-tint: #12352b;
+  --success-text: #4ed9a8;
+  --danger-tint: #3b1a18;
+  --danger-text: #ff9e98;
+  --on-primary: #0b0d1e;
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
   --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.4);
   color-scheme: dark;
@@ -167,16 +175,102 @@ h4,
 
 /* ---- Motion (style guide: 150 micro / 250 standard / 600 celebration) ---- */
 .tr-micro {
-  transition-duration: 150ms;
-  transition-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
+  transition: all 150ms cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 .tr-standard {
-  transition-duration: 250ms;
-  transition-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
+  transition: all 250ms cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 .tr-celebration {
-  transition-duration: 600ms;
-  transition-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
+  transition: all 600ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* ---- Cursors & keyboard focus ---- */
+button:not(:disabled),
+a[href],
+[role='button'],
+[role='tab'],
+label,
+select,
+summary {
+  cursor: pointer;
+}
+button:disabled,
+[aria-disabled='true'] {
+  cursor: not-allowed;
+}
+input[type='text'],
+input[type='email'],
+input[type='password'],
+input:not([type]),
+textarea {
+  cursor: text;
+}
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+[role='button']:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ---- Nav links: smooth hover (color + sliding underline) ---- */
+.nav-link {
+  position: relative;
+  transition: color 250ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    opacity 250ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.nav-link::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -6px;
+  height: 2px;
+  border-radius: 999px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 250ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.nav-link:hover::after,
+.nav-link:focus-visible::after {
+  transform: scaleX(1);
+}
+
+/* Pill nav links (app header) */
+.app-nav-link {
+  border-radius: 999px;
+  color: var(--muted);
+  font-weight: 500;
+  transition: all 250ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.app-nav-link:hover {
+  background: var(--mist);
+  color: var(--text);
+}
+.app-nav-link.active {
+  background: var(--primary-tint);
+  color: var(--primary);
+  font-weight: 600;
+}
+
+/* Photo hover zoom (cards, mentors) */
+.zoom-on-hover {
+  transition: transform 600ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.zoom-on-hover:hover {
+  transform: scale(1.03);
+}
+
+/* Interactive rows (history table) */
+.nice-table tbody tr {
+  transition: background 150ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.nice-table tbody tr:hover {
+  background: var(--mist);
 }
 
 .hover-lift {
@@ -214,7 +308,7 @@ h4,
 }
 .btn-primary {
   background: var(--primary);
-  color: #fff;
+  color: var(--on-primary);
 }
 .btn-primary:hover:not(:disabled) {
   background: var(--primary-deep);
@@ -227,12 +321,12 @@ h4,
   filter: brightness(0.95);
 }
 .btn-ghost {
-  border: 1px solid var(--ink);
+  border: 1px solid var(--text);
   color: var(--text);
   background: transparent;
 }
 .btn-ghost:hover:not(:disabled) {
-  background: var(--ink);
+  background: var(--text);
   color: var(--bg);
 }
 .btn-white {
@@ -241,6 +335,7 @@ h4,
 }
 .btn-white:hover:not(:disabled) {
   background: var(--mist);
+  color: var(--text);
 }
 
 .section-pad {
@@ -303,7 +398,7 @@ h4,
   color: var(--soft);
 }
 
-/* ---- Quiz feedback ---- */
+/* ---- Quiz feedback (theme-aware tints + always paired with an icon) ---- */
 .feedback-correct {
   background: var(--success-tint);
   border: 1px solid #12b886;
@@ -311,6 +406,45 @@ h4,
 .feedback-wrong {
   background: var(--danger-tint);
   border: 1px solid #f25c54;
+}
+
+/* Quiz answer options */
+.quiz-option {
+  border: 1px solid var(--line);
+  background: var(--bg);
+  transition: all 150ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.quiz-option:not(:disabled):hover {
+  border-color: var(--primary);
+  background: var(--primary-tint);
+  transform: translateY(-1px);
+}
+.quiz-option:disabled {
+  transform: none;
+}
+.quiz-option.quiz-picked {
+  border-color: var(--primary);
+  background: var(--primary-tint);
+  opacity: 1;
+}
+.quiz-option.quiz-correct {
+  border-color: #12b886;
+  background: var(--success-tint);
+  opacity: 1;
+}
+.quiz-option.quiz-wrong {
+  border-color: #f25c54;
+  background: var(--danger-tint);
+  opacity: 1;
+}
+
+/* Icon buttons (round arrow buttons etc.) */
+.icon-btn {
+  transition: all 150ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.icon-btn:hover:not(:disabled) {
+  transform: translateX(2px) scale(1.05);
+  filter: brightness(0.95);
 }
 
 /* ---- Confetti ---- */

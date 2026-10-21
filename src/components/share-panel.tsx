@@ -79,7 +79,7 @@ export function SharePanel({
           value={text}
           onChange={(e) => setTexts((s) => ({ ...s, [tone]: e.target.value }))}
           rows={8}
-          className="mt-4 w-full rounded-input border border-line bg-bg p-4 t-body outline-none focus:border-primary"
+          className="mt-4 w-full rounded-input tr-micro border border-line bg-bg p-4 t-body outline-none focus:border-primary"
           style={{ color: 'var(--text)', resize: 'vertical' }}
           aria-label="LinkedIn post draft"
         />
