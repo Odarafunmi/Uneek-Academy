@@ -80,13 +80,13 @@ export const psychology: CourseConfig = {
   coverImage: '/images/course-psychology.jpg',
 };
 
-export const comingSoon: CourseConfig[] = [
+export const moreCourses: CourseConfig[] = [
   {
     slug: 'communication',
     title: 'Communication: Say It So It Lands',
-    tagline: 'Clarity, presence, and words that work in real rooms.',
+    tagline: 'Clarity, presence, and words that work in real rooms — built for quiet people.',
     description:
-      'A daily program on speaking clearly, listening deeply, and handling hard conversations — built on the same weekly rhythm as Psychology.',
+      'A daily program on speaking clearly, listening deeply, and handling hard conversations — with exact words to borrow, tiny brave actions every day, and a rhythm designed for timid speakers. Same weekly engine as Psychology: five learn days, one review, one rest.',
     level: 'Beginner to intermediate',
     totalWeeks: 16,
     totalDays: 112,
@@ -94,17 +94,43 @@ export const comingSoon: CourseConfig[] = [
       { title: 'Beginner', xp: 0 },
       { title: 'Speaker', xp: 600 },
       { title: 'Connector', xp: 1800 },
+      { title: 'Communicator', xp: 3600 },
     ],
     months: [
       {
         title: 'Foundations of Clear Speech',
         weeks: 4,
-        topics: 'Clarity, structure, listening, presence.',
+        topics:
+          'Speaking anxiety and the spotlight effect, the 3-second pause, clarity and structure (What–So What–Now What), micro-bravery scripts for timid speakers, message vs. reception in writing.',
         accent: '#14B8A6',
         accentText: 'ink',
       },
+      {
+        title: 'Listening and Rapport',
+        weeks: 4,
+        topics:
+          'Active listening that people can feel, questions that open doors, small talk without panic, remembering names, reading rooms, warmth without performance.',
+        accent: '#0EA5E9',
+        accentText: 'ink',
+      },
+      {
+        title: 'Difficult Conversations',
+        weeks: 4,
+        topics:
+          'Saying no without guilt, boundaries with exact sentences, handling criticism, disagreeing kindly, repair after conflict, staying calm when it is personal.',
+        accent: '#FF7A45',
+        accentText: 'ink',
+      },
+      {
+        title: 'Presence and Influence',
+        weeks: 4,
+        topics:
+          'Storytelling that lands, speaking to groups without shrinking, persuasion with integrity, interviews and pitches, a capstone: the conversation you have been avoiding.',
+        accent: '#FFB020',
+        accentText: 'ink',
+      },
     ],
-    status: 'coming_soon',
+    status: 'live',
     coverIllustration: 'speech',
     coverImage: '/images/course-communication.jpg',
   },
@@ -137,7 +163,7 @@ export const comingSoon: CourseConfig[] = [
   },
 ];
 
-export const allCourses: CourseConfig[] = [psychology, ...comingSoon];
+export const allCourses: CourseConfig[] = [psychology, ...moreCourses];
 
 export function getCourse(slug: string): CourseConfig | undefined {
   return allCourses.find((c) => c.slug === slug);

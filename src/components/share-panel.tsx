@@ -111,18 +111,20 @@ function HookCardCard({
   onShared?: () => void;
 }) {
   return (
-    <div>
-      <div className="flex items-center gap-2.5">
-        <Sparkles size={18} style={{ color: 'var(--primary)' }} />
-        <h3 className="t-h4">Hook card</h3>
+      <div>
+        <div className="flex items-center gap-2.5">
+          <Sparkles size={18} style={{ color: 'var(--primary)' }} />
+          <h3 className="t-h4">Completion card</h3>
+        </div>
+        <p className="t-small mt-1" style={{ color: 'var(--muted)' }}>
+          Your day’s learning as a shareable image. Choose a design style —
+          <strong style={{ color: 'var(--text)' }}> Minimalist</strong> (clean text on a
+          gradient or solid you pick) or <strong style={{ color: 'var(--text)' }}>Interactive</strong>{' '}
+          (photo with a rising overlay) — switch templates, then export a 1080×1350 PNG.
+        </p>
+        <div className="mt-6 rounded-card border border-line p-6">
+          <HookCardEditor share={share} dayLabel={dayLabel} defaultAccent={accent} onShared={onShared} />
+        </div>
       </div>
-      <p className="t-small mt-1" style={{ color: 'var(--muted)' }}>
-        One idea per card. Switch template, toggle light/dark, adjust the accent — then
-        export a 1080×1350 PNG for LinkedIn.
-      </p>
-      <div className="mt-6 rounded-card border border-line p-6">
-        <HookCardEditor share={share} dayLabel={dayLabel} defaultAccent={accent} onShared={onShared} />
-      </div>
-    </div>
   );
 }

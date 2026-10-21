@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useApp, levelTitle, nextLevel } from '@/lib/store';
-import { psychology, comingSoon, accentForMonth } from '@/lib/courses';
+import { psychology, moreCourses, accentForMonth } from '@/lib/courses';
 import { lessonForDay, lessonsForCourse } from '@/content/psychology';
 import { SectionLabel, ProgressRing, StreakChip, PillTag, Arrow } from '@/components/ui';
 import type { CourseConfig, Lesson } from '@/lib/types';
@@ -17,7 +17,7 @@ export default function AcademyHome() {
     return <HomeSkeleton />;
   }
 
-  const enrolledCourses = [psychology, ...comingSoon].filter((c) => enrolled[c.slug]);
+  const enrolledCourses = [psychology, ...moreCourses].filter((c) => enrolled[c.slug]);
 
   return (
     <div className="space-y-14">
@@ -71,7 +71,7 @@ export default function AcademyHome() {
         <h2 className="t-h3">Course catalog</h2>
         <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
           <CatalogCard course={psychology} />
-          {comingSoon.map((c) => (
+          {moreCourses.map((c) => (
             <CatalogCard key={c.slug} course={c} />
           ))}
         </div>

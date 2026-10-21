@@ -228,7 +228,7 @@ function MoonRest() {
   );
 }
 
-/* ---------- Logo ---------- */
+/* ---------- Logo (theme-aware: clear on every background) ---------- */
 
 export function Logo({ light = false, className = '' }: { light?: boolean; className?: string }) {
   return (
@@ -246,7 +246,12 @@ export function Logo({ light = false, className = '' }: { light?: boolean; class
       </svg>
       <span
         className="font-heading font-semibold tracking-tight"
-        style={{ color: light ? '#fff' : P.ink, fontSize: 19 }}
+        style={{
+          // `light` = forced white (photo / always-dark sections);
+          // default follows the theme so it stays readable on any background.
+          color: light ? '#FFFFFF' : 'var(--text)',
+          fontSize: 19,
+        }}
       >
         Uneek Academy
       </span>

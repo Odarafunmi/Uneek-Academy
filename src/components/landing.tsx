@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { Logo } from './illustrations';
 import { SectionLabel, TwoToneHeadline, DashMarker, Arrow } from './ui';
 import { useEngage } from './auth';
-import { psychology, comingSoon } from '@/lib/courses';
+import { allCourses } from '@/lib/courses';
 import type { CourseConfig } from '@/lib/types';
 
 /* ============ NAV ============ */
@@ -227,19 +227,21 @@ export function CoursesSection() {
         </div>
 
         <div className="mt-12 grid gap-x-8 gap-y-14 sm:grid-cols-2 lg:mt-16 lg:grid-cols-3">
-          <CourseOverviewCard
-            course={psychology}
-            highlights={psychology.months.map((m) => m.title)}
-            cta="Enroll now"
-            onCta={() => engage({ kind: 'enroll', slug: 'psychology' })}
-          />
-          {comingSoon.map((c) => (
+          {allCourses.map((c) => (
             <CourseOverviewCard
               key={c.slug}
               course={c}
-              highlights={c.months.map((m) => m.topics.split(',')[0])}
-              cta="Join the waitlist"
-              onCta={() => engage({ kind: 'navigate', href: '/app' })}
+              highlights={
+                c.slug === 'psychology'
+                  ? c.months.map((m) => m.title)
+                  : c.months.map((m) => m.topics.split(',')[0])
+              }
+              cta={c.status === 'live' ? 'Enroll now' : 'Join the waitlist'}
+              onCta={() =>
+                c.status === 'live'
+                  ? engage({ kind: 'enroll', slug: c.slug })
+                  : engage({ kind: 'navigate', href: '/app' })
+              }
             />
           ))}
         </div>

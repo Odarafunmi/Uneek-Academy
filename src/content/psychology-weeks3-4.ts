@@ -17,6 +17,7 @@ export const weeks3to4: Lesson[] = [
     summary:
       'Thoughts feel automatic because they are — they grow from beliefs planted long before you noticed them.',
     concepts: ['Beliefs', 'Thought origins', 'Core beliefs'],
+    tryOn: 'Take one caught thought and ask: "What would have to be true about the world for this to make sense?" Write the answer. That answer is a belief — you just named a root.',
     cards: [
       {
         kind: 'hook',
@@ -105,6 +106,7 @@ export const weeks3to4: Lesson[] = [
     summary:
       'The brain is a story machine. It fills gaps with plots — and the plot is usually about you.',
     concepts: ['Narrative brain', 'Confabulation', 'Story vs. evidence'],
+    tryOn: 'Label one story today: "My story is…" then write one boring alternative. Timid version: practise on fiction — explain why a TV character did something, then invent a duller reason.',
     cards: [
       {
         kind: 'hook',
@@ -193,6 +195,7 @@ export const weeks3to4: Lesson[] = [
     summary:
       'We often feel a conclusion before we reason it — then build the reasoning as a press release.',
     concepts: ['Emotion-first judgement', 'Post-hoc reasoning', 'Deliberation'],
+    tryOn: 'On one small decision today, write your gut verdict first, your reasons second. Then ask: could the opposite verdict hire reasons just as easily?',
     cards: [
       {
         kind: 'hook',
@@ -281,6 +284,7 @@ export const weeks3to4: Lesson[] = [
     summary:
       'The more precisely you can name a feeling, the less power it has. This skill has a name: emotional granularity.',
     concepts: ['Emotional granularity', 'Labelling', 'Precision of feeling'],
+    tryOn: 'Upgrade three vague feelings today ("bad" → disappointed / anxious / embarrassed / tired). Keep a 10-word feelings list in your notes app and use it once before bed.',
     exercise:
       'Upgrade three vague feelings today. "Bad" → is it disappointed, anxious, embarrassed, tired? Use a feelings list if you get stuck.',
     cards: [
@@ -371,6 +375,7 @@ export const weeks3to4: Lesson[] = [
     summary:
       'Thoughts, feelings, and actions run in a loop. Find the loop and you find three places to intervene.',
     concepts: ['The loop model', 'Intervention points', 'Behavioural change'],
+    tryOn: 'Map one recent mood dip in three boxes: the thought, the feeling, the action. Circle the easiest door — usually the action — and try a 5-minute version of it this week.',
     exercise:
       'Map one recent mood dip: the thought, the feeling, and the action. Mark which point in the loop is easiest for you to change first.',
     cards: [
@@ -466,6 +471,7 @@ export const weeks3to4: Lesson[] = [
     summary:
       'Five ideas: beliefs under thoughts, the story machine, feelings-first judgements, emotional granularity, and the loop.',
     concepts: ['Week 3 synthesis'],
+    tryOn: 'Teach the loop model to someone — or voice-note it to yourself: "thoughts spark feelings, feelings drive actions, actions feed thoughts." Then notice one loop running in your day.',
     reviewTopics: [
       'Beliefs vs. thoughts',
       'Narrative brain',
@@ -629,6 +635,7 @@ export const weeks3to4: Lesson[] = [
     summary:
       'Schemas are folders the mind builds to make the world fast to read — until it stops reading and just files.',
     concepts: ['Schemas', 'Mental models', 'When schemas mislead'],
+    tryOn: 'Name three schemas you use daily (types of people, places, situations). For one, write a single line: how it helps, and how it could mislead. Timid version: use fictional characters first.',
     cards: [
       {
         kind: 'hook',
@@ -717,6 +724,7 @@ export const weeks3to4: Lesson[] = [
     summary:
       'Working memory is small. Overload it and you do not get "busy" — you get stuck.',
     concepts: ['Working memory', 'Cognitive load', 'Overwhelm management'],
+    tryOn: 'Do a 2-minute "desk dump": write every open loop on one page, then do one item for 5 minutes. Timid version: the dump is private — no one sees the list.',
     cards: [
       {
         kind: 'hook',
@@ -804,6 +812,7 @@ export const weeks3to4: Lesson[] = [
     summary:
       'The body is not a taxi for the brain. Breathing, posture, sleep, and movement change how you think.',
     concepts: ['Physiology and cognition', 'Breathing', 'Sleep and the mind'],
+    tryOn: 'Run one body-first reset before something stressful: 10 slow breaths (out longer than in) or a 5-minute walk. Note before/after in one word each.',
     cards: [
       {
         kind: 'hook',
@@ -892,6 +901,7 @@ export const weeks3to4: Lesson[] = [
     summary:
       'Four weeks of tools, one page. Catch → name → check → act. The whole month in one small routine.',
     concepts: ['Integration', 'The catch-name-check-act routine', 'Deliberate practice'],
+    tryOn: 'Run the full four steps once today — catch, name, check, act — and write the four lines. The situation can be tiny: a delayed message is perfect practice.',
     exercise:
       'Use the full routine once today: catch a thought, name the feeling precisely, check the story, act small. Write down the four steps.',
     cards: [
@@ -987,6 +997,7 @@ export const weeks3to4: Lesson[] = [
     summary:
       'Your last learning day of Month 1 is a field trip: one full day of watching the machinery you have studied.',
     concepts: ['Applied observation', 'Integration', 'Month 1 capstone'],
+    tryOn: 'Field-report day: five observations, one per concept, one line each. Timid version: all five can come from watching other people — the skill is the same.',
     exercise:
       'A noticing day: collect five observations (one per concept: autopilot, perception, attention, a shortcut, a thought–feeling–action loop). One line each. That is your Month 1 field report.',
     cards: [
@@ -1071,6 +1082,7 @@ export const weeks3to4: Lesson[] = [
     summary:
       'The full month in one test: perception, attention, memory, thoughts, feelings, and the loops between them.',
     concepts: ['Month 1 synthesis'],
+    tryOn: 'Retell the whole Month 1 map to one person — or record a 2-minute voice note for yourself. End with: "What changed in how I listen?"',
     reviewTopics: [
       'What psychology is',
       'Automatic processing & perception',

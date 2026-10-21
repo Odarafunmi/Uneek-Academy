@@ -20,6 +20,7 @@ export type CardKind =
   | 'definition'
   | 'example'
   | 'practice'
+  | 'story'
   | 'list'
   | 'quote'
   | 'illustration';
@@ -68,6 +69,11 @@ export interface Lesson {
   reflection?: string;
   /** real-world exercise prompt (applied days) */
   exercise?: string;
+  /**
+   * Daily hands-on "try-on": one concrete, low-stakes action the learner does
+   * themselves — with exact words where possible (timid-user friendly).
+   */
+  tryOn?: string;
   /** concept names covered this day (used by the weekly review) */
   concepts: string[];
   share?: LessonShare;

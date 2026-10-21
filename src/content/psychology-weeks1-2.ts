@@ -15,14 +15,21 @@ export const weeks1to2: Lesson[] = [
     dayIndex: 1,
     type: 'reading',
     title: 'What Psychology Actually Is',
-    duration: '6 min',
+    duration: '10 min',
     summary:
-      'Psychology is not mind-reading or Freud on a couch. It is the careful study of how people think, feel, and behave — and you can start using it today.',
+      'Psychology is not mind-reading or Freud on a couch. It is the careful study of how people think, feel, and behave — told today through two small stories you will recognize.',
     concepts: ['What psychology is', 'Patterns of behaviour', 'Science of the mind'],
+    tryOn:
+      'Find one conversation today — any conversation. Afterwards, write one line: "They said ___ but I noticed ___." That is your first data point. (Quiet version: just listen to a call or a show and note it privately. Nothing to say out loud yet.)',
     cards: [
       {
         kind: 'hook',
         body: 'Psychology is not about reading minds. It is about noticing patterns.',
+      },
+      {
+        kind: 'story',
+        title: 'The two conversations',
+        body: 'Amara had two conversations last Monday. First, her friend said "I’m fine" while closing her phone and dropping her voice. Amara shrugged and changed the subject. Second, her little cousin said "I hate school" and Amara asked, "What happened today?" — and got the real story: a spelling test went badly. Same Amara. Two conversations. In one she heard words; in the other she heard a pattern. Psychology is the second way of listening.',
       },
       {
         kind: 'text',
@@ -35,14 +42,19 @@ export const weeks1to2: Lesson[] = [
         body: 'The careful study of how people think, feel, and behave — and why.',
       },
       {
+        kind: 'story',
+        title: 'The pattern behind "I’m fine"',
+        body: 'Think again about Amara’s friend. The words said fine; the tone said otherwise. A psychologist does not guess her whole childhood from one sentence. They simply notice the gap between words and behaviour — and stay curious. Over a week, that curiosity might reveal a pattern: she goes quiet whenever work comes up. One observation is a data point. Three observations is a pattern. A pattern is where psychology begins.',
+      },
+      {
         kind: 'example',
         title: 'Everyday example',
-        body: 'Your friend says "I’m fine" in a flat voice and closes their phone. A psychologist does not guess their whole childhood. They notice a pattern: the words say fine, the tone says otherwise. That gap between words and behaviour is where psychology starts.',
+        body: 'You wave at a friend and they do not wave back. The instant sentence in your head: "They’re ignoring me." That sentence is a guess about behaviour. Psychology teaches you to hold it loosely: maybe they did not see you. Same event, different reading — and a much different evening.',
       },
       {
         kind: 'practice',
         title: 'Practice task',
-        body: 'Today, watch one conversation — at home, in class, or on a call. Notice one thing someone did that did not match what they said. Write it down. That’s it. You just collected your first data point.',
+        body: 'Before today’s try-on, do this warm-up: watch one conversation — at home, in class, or on a call. Notice one thing someone did that did not match what they said. That’s it. You just collected your first data point.',
       },
     ],
     questions: [
@@ -90,11 +102,11 @@ export const weeks1to2: Lesson[] = [
       question: 'What is one pattern in your own behaviour you have never questioned?',
       posts: {
         reflective:
-          'I used to think psychology was about reading minds. Day 1 of Uneek Academy taught me it is closer to gardening: noticing what grows, and under what conditions. Psychologists observe behaviour, form a guess, and test it. The gap between what people say and what they do is where the real information lives. Today I watched one conversation and noticed a mismatch between words and tone. It is a small habit, but it already changes how I listen. Question for you: what is one pattern in your own behaviour you have never questioned?',
+          'I used to think psychology was about reading minds. Day 1 of Uneek Academy taught me it is closer to gardening: noticing what grows, and under what conditions. The lesson followed two conversations — one where "I’m fine" was just words, and one where asking "what happened?" revealed a spelling test that went badly. The gap between what people say and what they do is where the real information lives. Today I watched one conversation and noticed a mismatch between words and tone. It is a small habit, but it already changes how I listen. Question for you: what is one pattern in your own behaviour you have never questioned?',
         direct:
           'Psychology is not mind-reading. It is pattern-noticing. That is the first lesson of Uneek Academy’s psychology course, and it lands hard. The method is simple: observe behaviour, form a guess, test the guess. No horoscopes, no guessing what people think. The most useful signal is the gap between what someone says and what they do — "I’m fine" said in a flat voice. Today’s task: watch one conversation and record one mismatch. One data point a day beats a shelf of unread books. What pattern in your own behaviour have you never questioned?',
         story:
-          'Yesterday a friend told me "I’m fine" while closing their phone and dropping their voice. Old me would have shrugged. New me — one day into a psychology course — noticed the gap between words and tone and simply asked, "How are you, really?" They talked for twenty minutes. Nothing mystical happened. Psychology, it turns out, is not reading minds. It is noticing patterns, forming a careful guess, and testing it with respect. Day 1 task done: one conversation, one mismatch, one note. What is one pattern in your own behaviour you have never questioned?',
+          'Last Monday my friend said "I’m fine" while closing her phone and dropping her voice. Old me shrugged and changed the subject. That same evening, my little cousin said "I hate school" and I asked "what happened today?" — and got the real story. Day 1 of Uneek Academy’s psychology course named the difference: psychology is not reading minds, it is noticing patterns. The gap between words and behaviour is where the real information lives. My try-on today: one conversation, one mismatch, one note. What is one pattern in your own behaviour you have never questioned?',
       },
     },
   },
@@ -110,6 +122,7 @@ export const weeks1to2: Lesson[] = [
     summary:
       'Most of your day runs on mental autopilot. That is not laziness — it is your brain saving energy for what matters.',
     concepts: ['Automatic processing', 'Mental energy', 'Conscious control'],
+    tryOn: 'Redo one tiny routine today as if it were your first time — tea, tying laces, the walk to your door. Count the steps in your head and note the one step autopilot always hides from you.',
     cards: [
       {
         kind: 'hook',
@@ -201,6 +214,7 @@ export const weeks1to2: Lesson[] = [
     summary:
       'Your eyes are cameras, but your brain is the editor. Perception is construction — and it sometimes overwrites reality.',
     concepts: ['Perception', 'Top-down processing', 'Visual illusions'],
+    tryOn: 'Find one optical illusion today (search "optical illusion"). Stare at it for 30 seconds and try to make your brain un-see the trick. It will refuse — that refusal is your evidence. Note one line: "My brain edited ___."',
     cards: [
       {
         kind: 'hook',
@@ -288,6 +302,7 @@ export const weeks1to2: Lesson[] = [
     summary:
       'Attention is a spotlight, not a floodlight. What it misses is as important as what it catches — and that explains the invisible gorilla.',
     concepts: ['Selective attention', 'Inattentional blindness', 'Attention as a resource'],
+    tryOn: 'Give one conversation 60 full seconds of attention today — no phone, no rehearsing your reply. Timid version: do this on a call where you never speak. Note one detail you would normally have missed.',
     cards: [
       {
         kind: 'hook',
@@ -380,6 +395,7 @@ export const weeks1to2: Lesson[] = [
     summary:
       'Mental shortcuts are fast and usually right. "Usually" is the word that makes psychology necessary.',
     concepts: ['Heuristics', 'Judgement under uncertainty', 'When shortcuts fail'],
+    tryOn: 'Catch one shortcut. Write two lines: the quick judgement, then the actual evidence. Quiet version: practise on strangers in a queue — zero risk, same muscle.',
     exercise:
       'Catch one shortcut today: find a quick judgement you made (someone’s outfit, a headline, a tone of voice) and ask what evidence you actually had.',
     cards: [
@@ -473,6 +489,7 @@ export const weeks1to2: Lesson[] = [
     summary:
       'Five ideas, one week: what psychology is, automatic processing, perception, attention, and mental shortcuts.',
     concepts: ['Week 1 synthesis'],
+    tryOn: 'Retell this week\'s five ideas to someone in under two minutes — or to an empty room. The one you stumble on is the one to review.',
     reviewTopics: [
       'What psychology is',
       'Automatic processing',
@@ -646,6 +663,7 @@ export const weeks1to2: Lesson[] = [
     summary:
       'Every time you remember something, you rebuild it — and the rebuild is never quite the original.',
     concepts: ['Reconstructive memory', 'Encoding', 'Memory as editing'],
+    tryOn: 'Write one strong memory from this week in five sentences. Then check one detail against a photo, a message, or another person. Find the seam — that is the point.',
     cards: [
       {
         kind: 'hook',
@@ -737,6 +755,7 @@ export const weeks1to2: Lesson[] = [
     summary:
       'Forgetting is not a defect. It is housekeeping — and there are three simple ways it happens.',
     concepts: ['Forgetting curves', 'Interference', 'Retrieval failure'],
+    tryOn: 'When you forget something today, name the door: decay, interference, or retrieval failure. Keep a 3-line note. No judgement — just labels.',
     cards: [
       {
         kind: 'hook',
@@ -826,6 +845,7 @@ export const weeks1to2: Lesson[] = [
     summary:
       'Encoding, storage, retrieval — and why attention at the moment of encoding decides most of memory’s fate.',
     concepts: ['Encoding', 'Storage', 'Retrieval', 'Attention at encoding'],
+    tryOn: 'Use the name trick on one person today (real or on screen): hear it, say it back once, picture it. Timid version: practise with names on a news show — nobody knows you are practising.',
     cards: [
       {
         kind: 'hook',
@@ -914,6 +934,7 @@ export const weeks1to2: Lesson[] = [
     summary:
       'That running commentary is made of actual sentences — and once you can hear them, you can work with them.',
     concepts: ['Automatic thoughts', 'Self-talk', 'Thought awareness'],
+    tryOn: 'Catch three sentences in your head today and write them word for word. If that feels too raw, start with sentences about something small — traffic, lunch, the weather.',
     exercise:
       'Catch three sentences in your head today and write them down word for word. No editing. The exact wording matters.',
     cards: [
@@ -1005,6 +1026,7 @@ export const weeks1to2: Lesson[] = [
     summary:
       'Feelings and thoughts are different things — tangled together, but separable. Learning to tell them apart is a superpower.',
     concepts: ['Emotions vs. thoughts', 'Labelling feelings', 'The feeling–thought gap'],
+    tryOn: 'Next time a strong feeling lands, split the page: "What I feel" (one word) on the left, "What I think" (sentences) on the right. Once, privately — notebook or phone.',
     exercise:
       'Next time you feel a strong emotion, split the page in two: "What I feel" (one word) and "What I think" (the sentences). Notice they are different columns.',
     cards: [
@@ -1093,6 +1115,7 @@ export const weeks1to2: Lesson[] = [
     summary:
       'Five ideas, one week: reconstructive memory, forgetting, encoding, automatic thoughts, and the feelings–thoughts split.',
     concepts: ['Week 2 synthesis'],
+    tryOn: 'Explain the feelings-vs-thoughts split to one person this week using your own example. Script: "I used to say I felt disrespected — that was a thought; the feeling was anger."',
     reviewTopics: [
       'Reconstructive memory',
       'Retrieval failure',

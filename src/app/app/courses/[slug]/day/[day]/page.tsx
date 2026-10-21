@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 import { notFound } from 'next/navigation';
 import { getCourse, accentForMonth } from '@/lib/courses';
-import { lessonForDay } from '@/content/psychology';
+import { lessonForDayInCourse } from '@/content/psychology';
 import { useApp, xpForDay } from '@/lib/store';
 import { PillTag, Arrow, SectionLabel } from '@/components/ui';
 import { Quiz } from '@/components/quiz';
@@ -18,7 +18,7 @@ export default function LessonPage({ params }: { params: { slug: string; day: st
   const { slug, day } = params;
   const dayIndex = Number(day);
   const course = getCourse(slug);
-  const lesson = lessonForDay(dayIndex);
+  const lesson = lessonForDayInCourse(slug, dayIndex);
   if (!course || !lesson || Number.isNaN(dayIndex)) notFound();
   return <LessonView slug={slug} lesson={lesson} />;
 }
@@ -131,7 +131,7 @@ function LessonView({ slug, lesson }: { slug: string; lesson: Lesson }) {
           <SectionLabel>Share your learning</SectionLabel>
           <SharePanel
             share={lesson.share!}
-            dayLabel={`Day ${lesson.dayIndex} · Psychology`}
+            dayLabel={`Day ${lesson.dayIndex} · ${getCourse(slug)?.title.split(':')[0] ?? 'Uneek'}`}
             accent={accent.hex}
             onShared={() => markShared(slug, lesson.dayIndex)}
           />
@@ -233,6 +233,7 @@ function LessonView({ slug, lesson }: { slug: string; lesson: Lesson }) {
 type Step =
   | { kind: 'cards'; cards: ContentCard[] }
   | { kind: 'video' }
+  | { kind: 'tryon'; prompt: string }
   | { kind: 'reflection'; prompt: string }
   | { kind: 'exercise'; prompt: string }
   | { kind: 'quiz' };
@@ -245,6 +246,7 @@ function buildSteps(lesson: Lesson): Step[] {
   } else {
     steps.push(...chunkCards(lesson.cards));
   }
+  if (lesson.tryOn) steps.push({ kind: 'tryon', prompt: lesson.tryOn });
   if (lesson.reflection) steps.push({ kind: 'reflection', prompt: lesson.reflection });
   if (lesson.exercise) steps.push({ kind: 'exercise', prompt: lesson.exercise });
   if (lesson.questions.length) steps.push({ kind: 'quiz' });
@@ -280,6 +282,23 @@ function StepContent({
   }
   if (step.kind === 'video') {
     return <VideoCard />;
+  }
+  if (step.kind === 'tryon') {
+    return (
+      <div>
+        <PillTag tone="accent">Today’s try-on</PillTag>
+        <h3 className="t-h3 mt-4">Do it yourself — tiny counts</h3>
+        <div className="mt-5 rounded-card p-6" style={{ background: 'var(--accent-tint)' }}>
+          <p className="t-body-l" style={{ color: 'var(--ink)' }}>
+            {step.prompt}
+          </p>
+        </div>
+        <p className="t-small mt-4" style={{ color: 'var(--muted)' }}>
+          Try-ons are the point of the course — reading without doing fades by
+          tomorrow. Small and awkward beats big and never.
+        </p>
+      </div>
+    );
   }
   if (step.kind === 'reflection') {
     return (
@@ -365,6 +384,20 @@ function CardView({ card }: { card: ContentCard }) {
           <p className="t-body mt-2">{card.body}</p>
         </div>
       );
+    case 'story':
+      return (
+        <div className="overflow-hidden rounded-card" style={{ background: 'var(--mist)' }}>
+          <div className="flex">
+            <div className="w-1 shrink-0" style={{ background: 'var(--primary)' }} aria-hidden="true" />
+            <div className="p-6">
+              <div className="t-label" style={{ color: 'var(--primary)', fontWeight: 600 }}>
+                Story{card.title ? ` · ${card.title}` : ''}
+              </div>
+              <p className="t-body-l mt-3">{card.body}</p>
+            </div>
+          </div>
+        </div>
+      );
     case 'list':
       return (
         <div>
@@ -411,8 +444,8 @@ function VideoCard() {
           className="absolute inset-0 h-full w-full object-cover"
         />
         <div
-          className="absolute inset-0 flex items-center justify-center"
-          style={{ background: 'rgba(15,18,38,.25)' }}
+          className="absolute inset-0 flex flex-col items-center justify-center gap-3"
+          style={{ background: 'rgba(15,18,38,.45)' }}
         >
           <span
             className="flex h-16 w-16 items-center justify-center rounded-full"
@@ -423,21 +456,18 @@ function VideoCard() {
               <path d="M8 5.5v13l11-6.5z" />
             </svg>
           </span>
+          <span className="t-label rounded-full px-3.5 py-1.5" style={{ background: 'rgba(15,18,38,.65)', color: '#fff' }}>
+            Video coming soon
+          </span>
         </div>
       </div>
       <div className="mt-5 flex flex-wrap items-center justify-between gap-4">
         <p className="t-small max-w-md" style={{ color: 'var(--muted)' }}>
-          Curated video for this lesson. (Video sourcing is finalized at launch — the
-          button opens a curated search for the topic.)
+          We are hosting this lesson’s video ourselves — it lands soon. Nothing is
+          blocked: the written lesson below covers everything, and you can complete
+          the day now.
         </p>
-        <a
-          className="btn btn-ghost"
-          href="https://www.youtube.com/results?search_query=psychology+explained"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Open video
-        </a>
+        <PillTag tone="line">Written lesson is complete</PillTag>
       </div>
     </div>
   );
