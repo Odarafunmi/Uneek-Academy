@@ -54,15 +54,64 @@ const MINIMALIST_PRESETS = [
   },
 ];
 
-/** Interactive: photography with a rising overlay and text on top. */
+/**
+ * Interactive: photography with a rising overlay and text at the bottom.
+ * Each photo illustrates a theme the card text is usually about; `keys` power
+ * the wording matcher so the default photo aligns with what the card says.
+ */
 const PHOTOS = [
-  { id: 'learn-1', src: '/images/learn-1.jpg', name: 'Study group' },
-  { id: 'learn-2', src: '/images/learn-2.jpg', name: 'Cafe learning' },
-  { id: 'learn-3', src: '/images/learn-3.jpg', name: 'Study partners' },
-  { id: 'learn-4', src: '/images/learn-4.jpg', name: 'Library crew' },
-  { id: 'hero', src: '/images/hero.jpg', name: 'Deep focus' },
-  { id: 'about', src: '/images/about.jpg', name: 'Online class' },
+  {
+    id: 'courage',
+    src: '/images/card-courage.jpg',
+    name: 'Speaking up',
+    keys: ['courage', 'brave', 'voice', 'speak up', 'first step', 'nervous', 'fear', 'quiet', 'hand', 'meeting', 'ask'],
+  },
+  {
+    id: 'conversation',
+    src: '/images/card-conversation.jpg',
+    name: 'Real conversation',
+    keys: ['conversation', 'talk', 'listen', 'say', 'words', 'question', 'pause', 'silence', 'friend', 'wrong', 'response'],
+  },
+  {
+    id: 'reflection',
+    src: '/images/card-reflection.jpg',
+    name: 'Quiet reflection',
+    keys: ['story', 'tell yourself', 'reflect', 'journal', 'yourself', 'think', 'mindset', 'belief', 'inner'],
+  },
+  {
+    id: 'habits',
+    src: '/images/card-habits.jpg',
+    name: 'Daily habits',
+    keys: ['habit', 'routine', 'practice', 'every day', 'daily', 'small', 'again', 'start', 'finish', 'discipline', 'show up'],
+  },
+  {
+    id: 'learning',
+    src: '/images/card-learning.jpg',
+    name: 'Deep learning',
+    keys: ['learn', 'study', 'book', 'curious', 'read', 'skill', 'grow', 'attention', 'focus', 'memory', 'smart', 'iq'],
+  },
+  {
+    id: 'feelings',
+    src: '/images/card-feelings.jpg',
+    name: 'Sitting with feelings',
+    keys: ['feel', 'emotion', 'mood', 'tired', 'battery', 'energy', 'rest', 'calm', 'anxious', 'sad', 'happy', 'safe', 'emotional'],
+  },
 ];
+
+/** Best-matching photo for the current card wording (default: reflection). */
+function suggestPhotoId(text: string, concept?: string): string {
+  const hay = `${text} ${concept ?? ''}`.toLowerCase();
+  let best = 'reflection';
+  let bestScore = 0;
+  for (const p of PHOTOS) {
+    const score = p.keys.reduce((n, k) => n + (hay.includes(k) ? 1 : 0), 0);
+    if (score > bestScore) {
+      bestScore = score;
+      best = p.id;
+    }
+  }
+  return bestScore > 0 ? best : 'reflection';
+}
 
 const ACCENTS = ['#4F46E5', '#8B5CF6', '#14B8A6', '#0EA5E9', '#FF7A45', '#FFB020'];
 
@@ -86,7 +135,9 @@ export function HookCardEditor({
 }) {
   const [style, setStyle] = useState<StyleMode>('minimalist');
   const [presetId, setPresetId] = useState('indigo-dusk');
-  const [photoId, setPhotoId] = useState('learn-1');
+  const [photoId, setPhotoId] = useState('reflection');
+  // once the user picks a photo by hand, stop auto-matching
+  const [photoTouched, setPhotoTouched] = useState(false);
   const [template, setTemplate] = useState<Template>('quote');
   const [accent, setAccent] = useState(defaultAccent);
   const [text, setText] = useState(share.hook);
@@ -110,6 +161,12 @@ export function HookCardEditor({
     ro.observe(el);
     return () => ro.disconnect();
   }, []);
+
+  // keep the photo illustrating the card's wording — until the user overrides it
+  useEffect(() => {
+    if (photoTouched) return;
+    setPhotoId(suggestPhotoId(text, share.concept));
+  }, [text, template, share.concept, photoTouched]);
 
   const preset = MINIMALIST_PRESETS.find((p) => p.id === presetId) ?? MINIMALIST_PRESETS[0];
   const photo = PHOTOS.find((p) => p.id === photoId) ?? PHOTOS[0];
@@ -215,7 +272,10 @@ export function HookCardEditor({
               {PHOTOS.map((p) => (
                 <button
                   key={p.id}
-                  onClick={() => setPhotoId(p.id)}
+                  onClick={() => {
+                    setPhotoId(p.id);
+                    setPhotoTouched(true);
+                  }}
                   aria-label={p.name}
                   title={p.name}
                   className="h-11 overflow-hidden rounded-[10px] border tr-micro"
@@ -228,9 +288,21 @@ export function HookCardEditor({
                 </button>
               ))}
             </div>
-            <p className="t-label mt-2" style={{ color: 'var(--soft)' }}>
-              {photo.name} · rising overlay
-            </p>
+            <div className="mt-2 flex items-center justify-between gap-2">
+              <p className="t-label" style={{ color: 'var(--soft)' }}>
+                {photo.name} · text on the dark base
+              </p>
+              <button
+                className="t-label tr-micro underline"
+                style={{ color: 'var(--primary)' }}
+                onClick={() => {
+                  setPhotoTouched(false);
+                  setPhotoId(suggestPhotoId(text, share.concept));
+                }}
+              >
+                Match to wording
+              </button>
+            </div>
           </>
         )}
 
@@ -338,7 +410,7 @@ export function HookCardEditor({
               fontFamily: 'Manrope, system-ui, sans-serif',
             }}
           >
-            {/* Interactive: photo + rising overlay */}
+            {/* Interactive: photo + rising overlay (text sits on the dark base) */}
             {isInteractive && (
               <>
                 <img
@@ -357,88 +429,120 @@ export function HookCardEditor({
                     position: 'absolute',
                     inset: 0,
                     background:
-                      'linear-gradient(to top, rgba(15,18,38,0.92) 0%, rgba(15,18,38,0.55) 38%, rgba(15,18,38,0.05) 72%)',
+                      'linear-gradient(to top, rgba(15,18,38,0.97) 0%, rgba(15,18,38,0.92) 26%, rgba(15,18,38,0.58) 46%, rgba(15,18,38,0.14) 72%, rgba(15,18,38,0.02) 90%)',
                   }}
                 />
-                <div style={{ position: 'relative', zIndex: 1 }} />
               </>
             )}
 
-            {/* accent bar — the one constant decoration */}
+            {/* content — minimalist starts at top; interactive sits on the dark bottom base */}
             <div
               style={{
                 position: 'relative',
                 zIndex: 1,
-                width: 220,
-                height: 6,
-                background: accent,
-              }}
-            />
-            <div
-              style={{
-                position: 'relative',
-                zIndex: 1,
-                marginTop: 110,
-                fontSize: 78 * scale,
-                lineHeight: 1.12,
-                fontWeight: template === 'quote' ? 300 : 400,
-                letterSpacing: '-0.025em',
+                height: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: isInteractive ? 'flex-end' : 'flex-start',
               }}
             >
-              {template === 'definition' && (
-                <div
-                  style={{
-                    fontSize: 34,
-                    fontWeight: 600,
-                    color: isInteractive ? accent : accent,
-                    marginBottom: 28,
-                    letterSpacing: 0,
-                  }}
-                >
-                  {share.concept ?? 'Concept'}
-                </div>
-              )}
-              {template === 'question' && (
-                <div
-                  style={{
-                    fontSize: 32,
-                    fontWeight: 600,
-                    color: accent,
-                    marginBottom: 28,
-                    letterSpacing: 0,
-                  }}
-                >
-                  Question
-                </div>
-              )}
-              {text}
-            </div>
+              {/* accent bar — the one constant decoration */}
+              <div
+                style={{
+                  width: 220,
+                  height: 6,
+                  background: accent,
+                  marginBottom: isInteractive ? 36 : 0,
+                }}
+              />
+              <div
+                style={{
+                  marginTop: isInteractive ? 0 : 110,
+                  fontSize: (isInteractive ? 72 : 78) * scale,
+                  lineHeight: 1.12,
+                  fontWeight: template === 'quote' ? 300 : 400,
+                  letterSpacing: '-0.025em',
+                }}
+              >
+                {template === 'definition' && (
+                  <div
+                    style={{
+                      fontSize: 34,
+                      fontWeight: 600,
+                      color: accent,
+                      marginBottom: 28,
+                      letterSpacing: 0,
+                    }}
+                  >
+                    {share.concept ?? 'Concept'}
+                  </div>
+                )}
+                {template === 'question' && (
+                  <div
+                    style={{
+                      fontSize: 32,
+                      fontWeight: 600,
+                      color: accent,
+                      marginBottom: 28,
+                      letterSpacing: 0,
+                    }}
+                  >
+                    Question
+                  </div>
+                )}
+                {text}
+              </div>
 
-            <div
-              style={{
-                position: 'absolute',
-                left: 96,
-                bottom: 88,
-                fontSize: 28,
-                color: sub,
-                fontFamily: 'Inter, system-ui, sans-serif',
-                zIndex: 1,
-              }}
-            >
-              {dayLabel}
-            </div>
-            <div
-              style={{
-                position: 'absolute',
-                right: 96,
-                bottom: 88,
-                fontSize: 28,
-                fontWeight: 600,
-                color: fg,
-                zIndex: 1,
-              }}
-            >
-              Uneek Academy
+              {isInteractive ? (
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'baseline',
+                    marginTop: 56,
+                  }}
+                >
+                  <span
+                    style={{
+                      fontSize: 28,
+                      color: sub,
+                      fontFamily: 'Inter, system-ui, sans-serif',
+                    }}
+                  >
+                    {dayLabel}
+                  </span>
+                  <span style={{ fontSize: 28, fontWeight: 600, color: fg }}>
+                    Uneek Academy
+                  </span>
+                </div>
+              ) : (
+                <>
+                  <div
+                    style={{
+                      position: 'absolute',
+                      left: 0,
+                      bottom: -8,
+                      fontSize: 28,
+                      color: sub,
+                      fontFamily: 'Inter, system-ui, sans-serif',
+                    }}
+                  >
+                    {dayLabel}
+                  </div>
+                  <div
+                    style={{
+                      position: 'absolute',
+                      right: 0,
+                      bottom: -8,
+                      fontSize: 28,
+                      fontWeight: 600,
+                      color: fg,
+                    }}
+                  >
+                    Uneek Academy
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </div>
