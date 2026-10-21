@@ -101,6 +101,12 @@ export const weeks3to4: Lesson[] = [
     day: 2,
     dayIndex: 16,
     type: 'video',
+    video: {
+      youtubeId: 'htiZWuoUGcY',
+      title: "Why you think you're right — even when you're wrong",
+      by: 'Julia Galef · TED',
+      note: 'The story your brain tells to protect what it already believes, and the “scout mindset” that swaps defending your story for checking it against evidence. 5M+ views.',
+    },
     title: 'The Story Your Brain Tells',
     duration: '8 min',
     summary:
@@ -719,6 +725,12 @@ export const weeks3to4: Lesson[] = [
     day: 2,
     dayIndex: 23,
     type: 'video',
+    video: {
+      youtubeId: 'UWKvpFZJwcE',
+      title: 'How your “working memory” makes sense of the world',
+      by: 'Peter Doolittle · TED',
+      note: 'Your mental RAM holds about four things for twenty seconds — Peter Doolittle on why overload makes you freeze and simple strategies to lighten the load. 3M+ views.',
+    },
     title: 'Cognitive Load: Why You Feel Stuck',
     duration: '8 min',
     summary:

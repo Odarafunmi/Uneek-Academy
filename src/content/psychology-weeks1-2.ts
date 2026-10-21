@@ -117,6 +117,12 @@ export const weeks1to2: Lesson[] = [
     day: 2,
     dayIndex: 2,
     type: 'video',
+    video: {
+      youtubeId: '-moW9jvvMr4',
+      title: 'A simple way to break a bad habit',
+      by: 'Judson Brewer · TED',
+      note: 'Psychiatrist Judson Brewer shows the trigger–behaviour–reward loop that runs your brain on autopilot — and how curious awareness, not willpower, hands you back the controls. 38M+ views across TED.',
+    },
     title: 'Your Brain on Autopilot',
     duration: '8 min',
     summary:
@@ -750,6 +756,12 @@ export const weeks1to2: Lesson[] = [
     day: 2,
     dayIndex: 9,
     type: 'video',
+    video: {
+      youtubeId: 'Irx0tC92fdE',
+      title: 'How your memory works — and why forgetting is totally OK',
+      by: 'Lisa Genova · TED',
+      note: 'Neuroscientist Lisa Genova explains why we forget names, words, and why we walked into a room — and why forgetting is normal memory doing its job, not you failing.',
+    },
     title: 'Why We Forget',
     duration: '8 min',
     summary:

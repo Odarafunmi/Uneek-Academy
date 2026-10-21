@@ -12,7 +12,7 @@ import { SharePanel } from '@/components/share-panel';
 import { Illustration } from '@/components/illustrations';
 import { ConfettiLayer, Toast, useCelebration } from '@/components/celebration';
 import { Check, ChevronLeft, ChevronRight, Lock, Moon } from 'lucide-react';
-import type { ContentCard, Lesson } from '@/lib/types';
+import type { ContentCard, Lesson, LessonVideo } from '@/lib/types';
 
 export default function LessonPage({ params }: { params: { slug: string; day: string } }) {
   const { slug, day } = params;
@@ -232,7 +232,7 @@ function LessonView({ slug, lesson }: { slug: string; lesson: Lesson }) {
 
 type Step =
   | { kind: 'cards'; cards: ContentCard[] }
-  | { kind: 'video' }
+  | { kind: 'video'; video?: LessonVideo }
   | { kind: 'tryon'; prompt: string }
   | { kind: 'reflection'; prompt: string }
   | { kind: 'exercise'; prompt: string }
@@ -241,7 +241,7 @@ type Step =
 function buildSteps(lesson: Lesson): Step[] {
   const steps: Step[] = [];
   if (lesson.type === 'video') {
-    steps.push({ kind: 'video' });
+    steps.push({ kind: 'video', video: lesson.video });
     steps.push(...chunkCards(lesson.cards));
   } else {
     steps.push(...chunkCards(lesson.cards));
@@ -281,7 +281,7 @@ function StepContent({
     );
   }
   if (step.kind === 'video') {
-    return <VideoCard />;
+    return <VideoCard video={step.video} />;
   }
   if (step.kind === 'tryon') {
     return (
@@ -433,41 +433,112 @@ function CardView({ card }: { card: ContentCard }) {
   }
 }
 
-function VideoCard() {
-  return (
-    <div>
-      <PillTag tone="tint">Video lesson</PillTag>
-      <div className="relative mt-5 aspect-video w-full overflow-hidden rounded-[12px]">
-        <img
-          src="/images/video-still.jpg"
-          alt="A learner taking notes during a video lesson"
-          className="absolute inset-0 h-full w-full object-cover"
-        />
-        <div
-          className="absolute inset-0 flex flex-col items-center justify-center gap-3"
-          style={{ background: 'rgba(15,18,38,.45)' }}
-        >
-          <span
-            className="flex h-16 w-16 items-center justify-center rounded-full"
-            style={{ background: 'rgba(255,255,255,.92)' }}
-            aria-hidden="true"
+function VideoCard({ video }: { video?: LessonVideo }) {
+  const [playing, setPlaying] = useState(false);
+
+  // no curated video yet — keep the day fully playable without it
+  if (!video) {
+    return (
+      <div>
+        <PillTag tone="tint">Video lesson</PillTag>
+        <div className="relative mt-5 aspect-video w-full overflow-hidden rounded-[12px]">
+          <img
+            src="/images/video-still.jpg"
+            alt="A learner taking notes during a video lesson"
+            className="absolute inset-0 h-full w-full object-cover"
+          />
+          <div
+            className="absolute inset-0 flex flex-col items-center justify-center gap-3"
+            style={{ background: 'rgba(15,18,38,.45)' }}
           >
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="#0F1226">
-              <path d="M8 5.5v13l11-6.5z" />
-            </svg>
-          </span>
-          <span className="t-label rounded-full px-3.5 py-1.5" style={{ background: 'rgba(15,18,38,.65)', color: '#fff' }}>
-            Video coming soon
-          </span>
+            <span
+              className="flex h-16 w-16 items-center justify-center rounded-full"
+              style={{ background: 'rgba(255,255,255,.92)' }}
+              aria-hidden="true"
+            >
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="#0F1226">
+                <path d="M8 5.5v13l11-6.5z" />
+              </svg>
+            </span>
+            <span className="t-label rounded-full px-3.5 py-1.5" style={{ background: 'rgba(15,18,38,.65)', color: '#fff' }}>
+              Video coming soon
+            </span>
+          </div>
+        </div>
+        <div className="mt-5 flex flex-wrap items-center justify-between gap-4">
+          <p className="t-small max-w-md" style={{ color: 'var(--muted)' }}>
+            We are hosting this lesson’s video ourselves — it lands soon. Nothing is
+            blocked: the written lesson below covers everything, and you can complete
+            the day now.
+          </p>
+          <PillTag tone="line">Written lesson is complete</PillTag>
         </div>
       </div>
-      <div className="mt-5 flex flex-wrap items-center justify-between gap-4">
-        <p className="t-small max-w-md" style={{ color: 'var(--muted)' }}>
-          We are hosting this lesson’s video ourselves — it lands soon. Nothing is
-          blocked: the written lesson below covers everything, and you can complete
-          the day now.
-        </p>
-        <PillTag tone="line">Written lesson is complete</PillTag>
+    );
+  }
+
+  return (
+    <div>
+      <div className="flex flex-wrap items-center gap-2">
+        <PillTag tone="tint">Video lesson</PillTag>
+        <PillTag tone="line">YouTube · {video.by}</PillTag>
+      </div>
+      <div className="mt-5 aspect-video w-full overflow-hidden rounded-[12px]" style={{ background: '#0F1226' }}>
+        {playing ? (
+          <iframe
+            className="h-full w-full"
+            src={`https://www.youtube-nocookie.com/embed/${video.youtubeId}?autoplay=1&rel=0`}
+            title={video.title}
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+          />
+        ) : (
+          <button
+            type="button"
+            onClick={() => setPlaying(true)}
+            className="group relative block h-full w-full tr-micro"
+            aria-label={`Play video: ${video.title}`}
+          >
+            <img
+              src="/images/video-still.jpg"
+              alt=""
+              className="absolute inset-0 h-full w-full object-cover"
+            />
+            <div
+              className="absolute inset-0 flex flex-col items-center justify-center gap-3"
+              style={{ background: 'rgba(15,18,38,.45)' }}
+            >
+              <span
+                className="flex h-16 w-16 items-center justify-center rounded-full tr-micro"
+                style={{ background: 'rgba(255,255,255,.92)' }}
+                aria-hidden="true"
+              >
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="#0F1226">
+                  <path d="M8 5.5v13l11-6.5z" />
+                </svg>
+              </span>
+              <span className="t-label rounded-full px-3.5 py-1.5" style={{ background: 'rgba(15,18,38,.65)', color: '#fff' }}>
+                Play · {video.title}
+              </span>
+            </div>
+          </button>
+        )}
+      </div>
+      <div className="mt-5 flex flex-wrap items-start justify-between gap-4">
+        <div className="max-w-xl">
+          <p className="t-body">{video.title}</p>
+          <p className="t-small mt-1" style={{ color: 'var(--muted)' }}>
+            <strong style={{ color: 'var(--ink)' }}>Why this video:</strong> {video.note}
+          </p>
+        </div>
+        <a
+          className="btn btn-ghost"
+          href={`https://www.youtube.com/watch?v=${video.youtubeId}`}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Open on YouTube
+        </a>
       </div>
     </div>
   );

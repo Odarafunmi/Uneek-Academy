@@ -114,6 +114,12 @@ export const communicationWeek1: Lesson[] = [
     day: 2,
     dayIndex: 2,
     type: 'video',
+    video: {
+      youtubeId: 'gCfzeONu3Mo',
+      title: 'How miscommunication happens (and how to avoid it)',
+      by: 'Katherine Hampsten · TED-Ed',
+      note: 'Why the words that leave your mouth are never the ones that land — the clay metaphor of message vs. reception — and four habits that fix it. 4M+ views.',
+    },
     title: 'The Words That Come Out Wrong',
     duration: '8 min',
     summary:

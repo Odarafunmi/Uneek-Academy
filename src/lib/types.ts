@@ -74,6 +74,8 @@ export interface Lesson {
    * themselves — with exact words where possible (timid-user friendly).
    */
   tryOn?: string;
+  /** video days: the curated YouTube lesson */
+  video?: LessonVideo;
   /** concept names covered this day (used by the weekly review) */
   concepts: string[];
   share?: LessonShare;
@@ -81,6 +83,16 @@ export interface Lesson {
   reviewTopics?: string[];
   /** rest days */
   restMessage?: string;
+}
+
+/** Curated external video lesson (YouTube), matched to this day's topic. */
+export interface LessonVideo {
+  /** YouTube video ID (watch?v=…) */
+  youtubeId: string;
+  title: string;
+  by: string;
+  /** why this video fits the day */
+  note: string;
 }
 
 export interface CourseMonth {

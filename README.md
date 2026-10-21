@@ -79,9 +79,13 @@ follow the same weekly template and are outlined on the course page.
 
 - Profiles and progress live in this browser only (v1). When v3 lands, local accounts
   migrate to Google sign-in + Supabase sync.
-- **Video lessons are pending self-hosting** — video days ship with the complete
-  written lesson (stories, try-ons, quiz) and a "video coming soon" card, so nothing
-  is blocked. The hosted videos drop in later.
+- **Video lessons use curated YouTube picks** (TED / TED-Ed, chosen per topic with a
+  preference for high views and engagement): Judson Brewer on habits (autopilot day),
+  Katherine Hampsten on miscommunication, Lisa Genova on forgetting, Julia Galef on
+  the stories we believe, Peter Doolittle on working memory. Each is shown as a
+  click-to-play embed (privacy-enhanced `youtube-nocookie.com`) with a "why this
+  video" note; the written lesson remains complete, so days work even if a video
+  ever disappears.
 - Psychology Month 1 and Communication Week 1 are fully seeded; remaining weeks follow
   the same weekly template (5 learn / 1 review / 1 rest) and unlock as content lands.
 - Responsive from 320px to ultrawide: cards, calendar, tables, and the completion-card
