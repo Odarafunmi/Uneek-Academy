@@ -3,22 +3,25 @@
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { MessageCircle, Send, X, Sparkles } from 'lucide-react';
+import { Arrow } from '@/components/ui';
 import {
-  PERSONAS,
+  STANDARD_ASSISTANT,
+  getMentor,
+  mentorsFor,
   askMentor,
-  getPersona,
   type MentorSource,
-  type PersonaId,
+  type SubjectId,
 } from '@/lib/mentor';
 
 interface ChatMsg {
   from: 'user' | 'mentor';
   text: string;
   sources?: MentorSource[];
-  persona?: PersonaId;
+  /** which mentor wrote it (for the accent bar) */
+  mentorId?: string;
 }
 
-/** tiny renderer for **bold** + line breaks + • bullets */
+/** tiny renderer for **bold** + line breaks */
 function Rich({ text }: { text: string }) {
   const parts = text.split(/(\*\*[^*]+\*\*|\n)/g);
   return (
@@ -40,46 +43,81 @@ function Rich({ text }: { text: string }) {
 
 export function MentorChat() {
   const [open, setOpen] = useState(false);
-  const [persona, setPersona] = useState<PersonaId>('assistant');
-  const [scope, setScope] = useState<'all' | 'psychology' | 'communication'>('all');
-  const [msgs, setMsgs] = useState<ChatMsg[]>([]);
+  const [subject, setSubject] = useState<SubjectId>('all');
+  const [mentorId, setMentorId] = useState<string>('assistant');
+  /** 'pick' = show the mentor list (only when the subject has dedicated mentors) */
+  const [stage, setStage] = useState<'pick' | 'chat'>('chat');
+  const [sessions, setSessions] = useState<Record<string, ChatMsg[]>>({});
   const [input, setInput] = useState('');
   const [typing, setTyping] = useState(false);
   const listRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  const seenPersona = useRef<Set<PersonaId>>(new Set());
+  const greeted = useRef<Set<string>>(new Set());
 
-  const p = getPersona(persona);
+  const mentor = getMentor(mentorId);
+  const sessionKey = `${subject}:${mentorId}`;
+  const msgs = sessions[sessionKey] ?? [];
+  const subjectMentors = mentorsFor(subject);
 
-  // greet when a persona is first opened
+  // subject change → mentor-selection step when dedicated mentors exist
+  function chooseSubject(next: SubjectId) {
+    setSubject(next);
+    const list = mentorsFor(next);
+    if (list.length > 0) {
+      setStage('pick');
+    } else {
+      setMentorId('assistant');
+      setStage('chat');
+    }
+  }
+
+  function startWith(id: string) {
+    setMentorId(id);
+    setStage('chat');
+    const key = `${subject}:${id}`;
+    if (!greeted.current.has(key)) {
+      greeted.current.add(key);
+      const g = getMentor(id).greeting;
+      setSessions((s) => ({ ...s, [key]: [...(s[key] ?? []), { from: 'mentor', text: g, mentorId: id }] }));
+    }
+  }
+
+  // standard-assistant greeting when a mentor-less subject is opened directly
   useEffect(() => {
-    if (!open) return;
-    if (!seenPersona.current.has(persona)) {
-      seenPersona.current.add(persona);
-      setMsgs((m) => [...m, { from: 'mentor', text: p.greeting, persona }]);
+    if (!open || stage !== 'chat') return;
+    const key = sessionKey;
+    if (!greeted.current.has(key)) {
+      greeted.current.add(key);
+      const g = getMentor(mentorId).greeting;
+      setSessions((s) => ({ ...s, [key]: [...(s[key] ?? []), { from: 'mentor', text: g, mentorId }] }));
     }
     inputRef.current?.focus();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open, persona]);
+  }, [open, stage, sessionKey]);
 
   useEffect(() => {
     listRef.current?.scrollTo({ top: listRef.current.scrollHeight, behavior: 'smooth' });
-  }, [msgs, typing, open]);
+  }, [msgs, typing, open, stage]);
 
   function send(text: string) {
     const q = text.trim();
     if (!q || typing) return;
-    setMsgs((m) => [...m, { from: 'user', text: q }]);
+    const key = sessionKey;
+    const history = (sessions[key] ?? []).map((m) => ({ from: m.from, text: m.text }));
+    setSessions((s) => ({ ...s, [key]: [...(s[key] ?? []), { from: 'user', text: q }] }));
     setInput('');
     setTyping(true);
-    const reply = askMentor(q, persona, scope);
+    const reply = askMentor(q, mentorId, subject, history);
     window.setTimeout(() => {
       setTyping(false);
-      setMsgs((m) => [
-        ...m,
-        { from: 'mentor', text: reply.text, sources: reply.sources, persona },
-      ]);
-    }, 450);
+      setSessions((s) => ({
+        ...s,
+        [key]: [
+          ...(s[key] ?? []),
+          { from: 'mentor', text: reply.text, sources: reply.sources, mentorId },
+        ],
+      }));
+    }, 500);
   }
 
   return (
@@ -87,7 +125,7 @@ export function MentorChat() {
       {/* launcher */}
       <button
         onClick={() => setOpen((o) => !o)}
-        className="fixed bottom-5 right-5 z-[300] flex h-14 w-14 items-center justify-center rounded-full shadow-md tr-micro hover:scale-105"
+        className="mentor-launcher fixed z-[300] flex h-14 w-14 items-center justify-center rounded-full shadow-md tr-micro hover:scale-105"
         style={{ background: 'var(--primary)', color: '#fff' }}
         aria-label={open ? 'Close mentor chat' : 'Open mentor chat'}
         title="AI Mentor"
@@ -95,12 +133,11 @@ export function MentorChat() {
         {open ? <X size={22} /> : <MessageCircle size={22} />}
       </button>
 
-      {/* panel */}
+      {/* panel — sized to sit below the navbar at every viewport */}
       {open && (
         <div
-          className="fixed bottom-24 right-2 z-[300] flex w-[calc(100vw-1rem)] max-w-[420px] flex-col overflow-hidden rounded-card shadow-md sm:right-5"
+          className="mentor-panel fixed right-2 z-[300] flex w-[calc(100vw-1rem)] max-w-[420px] flex-col overflow-hidden rounded-card shadow-md sm:right-5"
           style={{
-            height: 'min(640px, calc(100vh - 8rem))',
             background: 'var(--bg)',
             border: '1px solid var(--line)',
           }}
@@ -108,147 +145,175 @@ export function MentorChat() {
           aria-label="AI Mentor chat"
         >
           {/* header */}
-          <div
-            className="flex items-center gap-3 border-b border-line px-4 py-3"
-            style={{ background: 'var(--surface)', backgroundBlendMode: 'overlay' }}
-          >
+          <div className="flex items-center gap-3 border-b border-line px-4 py-3">
             <span
               className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-lg"
-              style={{ background: p.accent + '22' }}
+              style={{ background: mentor.accent + '22' }}
               aria-hidden="true"
             >
-              {p.emoji}
+              {mentor.emoji}
             </span>
             <div className="min-w-0 flex-1">
               <p className="t-label truncate" style={{ fontWeight: 700 }}>
-                {p.name}
+                {stage === 'pick' ? 'Choose your mentor' : mentor.name}
               </p>
               <p className="t-label truncate" style={{ color: 'var(--muted)' }}>
-                {p.title} · {p.tone}
+                {stage === 'pick' ? 'Dedicated tutors for this subject' : mentor.title}
               </p>
             </div>
             <select
-              value={scope}
-              onChange={(e) => setScope(e.target.value as typeof scope)}
+              value={subject}
+              onChange={(e) => chooseSubject(e.target.value as SubjectId)}
               className="t-label rounded-full border border-line px-2 py-1"
               style={{ background: 'var(--bg)', color: 'var(--text)' }}
-              aria-label="Course context"
+              aria-label="Subject"
             >
-              <option value="all">All courses</option>
+              <option value="all">General</option>
               <option value="psychology">Psychology</option>
               <option value="communication">Communication</option>
             </select>
           </div>
 
-          {/* persona switcher */}
-          <div className="flex gap-1.5 border-b border-line px-3 py-2">
-            {PERSONAS.map((x) => (
-              <button
-                key={x.id}
-                onClick={() => setPersona(x.id)}
-                className="flex-1 rounded-full px-2 py-1.5 t-label tr-micro"
-                style={{
-                  background: persona === x.id ? x.accent + '1f' : 'transparent',
-                  color: persona === x.id ? x.accent : 'var(--muted)',
-                  border: `1px solid ${persona === x.id ? x.accent : 'var(--line)'}`,
-                  fontWeight: persona === x.id ? 700 : 500,
-                }}
-                aria-pressed={persona === x.id}
-              >
-                <span aria-hidden="true">{x.emoji}</span>{' '}
-                {x.id === 'assistant' ? 'Assistant' : x.id === 'psychology' ? 'Psychology' : 'Communication'}
-              </button>
-            ))}
-          </div>
-
-          {/* messages */}
-          <div ref={listRef} className="flex-1 space-y-3 overflow-y-auto px-4 py-4 nice-scroll">
-            {msgs.map((m, i) => (
-              <div key={i} className={m.from === 'user' ? 'flex justify-end' : ''}>
-                <div
-                  className="max-w-[88%] rounded-2xl px-3.5 py-2.5 t-small"
-                  style={
-                    m.from === 'user'
-                      ? { background: 'var(--primary)', color: '#fff', borderBottomRightRadius: 6 }
-                      : {
-                          background: 'var(--surface)',
-                          color: 'var(--text)',
-                          borderBottomLeftRadius: 6,
-                          borderLeft: `3px solid ${getPersona(m.persona ?? persona).accent}`,
-                        }
-                  }
-                >
-                  <Rich text={m.text} />
-                  {m.sources && m.sources.length > 0 && (
-                    <div className="mt-2 space-y-1 border-t pt-2" style={{ borderColor: 'var(--line)' }}>
-                      {m.sources.map((s) => (
-                        <Link
-                          key={s.href + s.label}
-                          href={s.href}
-                          onClick={() => setOpen(false)}
-                          className="block t-label underline tr-micro"
-                          style={{ color: 'var(--primary)' }}
-                        >
-                          → {s.label}
-                        </Link>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </div>
-            ))}
-            {typing && (
-              <p className="t-label" style={{ color: 'var(--muted)' }}>
-                {p.name} is thinking…
+          {stage === 'pick' ? (
+            /* ---------- mentor selection (only when mentors exist) ---------- */
+            <div className="flex-1 space-y-2.5 overflow-y-auto px-4 py-4 nice-scroll">
+              <p className="t-small" style={{ color: 'var(--muted)' }}>
+                Pick the mentor you’d like to learn with — each has their own style.
               </p>
-            )}
-            {/* starter chips — only before the first user message */}
-            {msgs.filter((m) => m.from === 'user').length === 0 && !typing && (
-              <div className="flex flex-wrap gap-1.5 pt-1">
-                {p.suggested.map((s) => (
-                  <button
-                    key={s}
-                    onClick={() => send(s)}
-                    className="rounded-full border border-line px-3 py-1.5 t-label tr-micro hover:border-primary"
-                    style={{ color: 'var(--muted)' }}
+              {subjectMentors.map((m) => (
+                <button
+                  key={m.id}
+                  onClick={() => startWith(m.id)}
+                  className="flex w-full items-start gap-3 rounded-card border border-line p-3.5 text-left tr-micro hover:border-primary"
+                >
+                  <span
+                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-xl"
+                    style={{ background: m.accent + '22' }}
+                    aria-hidden="true"
                   >
-                    {s}
-                  </button>
+                    {m.emoji}
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="t-label block" style={{ fontWeight: 700 }}>
+                      {m.name}
+                    </span>
+                    <span className="t-label block" style={{ color: m.accent }}>
+                      {m.title}
+                    </span>
+                    <span className="t-small mt-1 block" style={{ color: 'var(--muted)' }}>
+                      {m.blurb}
+                    </span>
+                  </span>
+                  <Arrow size={15} />
+                </button>
+              ))}
+              <button
+                onClick={() => startWith('assistant')}
+                className="t-label w-full rounded-card border border-dashed border-line px-3.5 py-3 tr-micro hover:border-primary"
+                style={{ color: 'var(--muted)' }}
+              >
+                ✨ Just chat with the general assistant instead
+              </button>
+            </div>
+          ) : (
+            /* ---------- conversation ---------- */
+            <>
+              {subjectMentors.length > 0 && (
+                <button
+                  onClick={() => setStage('pick')}
+                  className="t-label flex items-center gap-1.5 border-b border-line px-4 py-2 tr-micro"
+                  style={{ color: 'var(--muted)' }}
+                >
+                  <Arrow size={12} /> Switch mentor
+                </button>
+              )}
+              <div ref={listRef} className="flex-1 space-y-3 overflow-y-auto px-4 py-4 nice-scroll">
+                {msgs.map((m, i) => (
+                  <div key={i} className={m.from === 'user' ? 'flex justify-end' : ''}>
+                    <div
+                      className="max-w-[88%] rounded-2xl px-3.5 py-2.5 t-small"
+                      style={
+                        m.from === 'user'
+                          ? { background: 'var(--primary)', color: '#fff', borderBottomRightRadius: 6 }
+                          : {
+                              background: 'var(--surface)',
+                              color: 'var(--text)',
+                              borderBottomLeftRadius: 6,
+                              borderLeft: `3px solid ${getMentor(m.mentorId ?? mentorId).accent}`,
+                            }
+                      }
+                    >
+                      <Rich text={m.text} />
+                      {m.sources && m.sources.length > 0 && (
+                        <div className="mt-2 space-y-1 border-t pt-2" style={{ borderColor: 'var(--line)' }}>
+                          {m.sources.map((s) => (
+                            <Link
+                              key={s.href + s.label}
+                              href={s.href}
+                              onClick={() => setOpen(false)}
+                              className="block t-label underline tr-micro"
+                              style={{ color: 'var(--primary)' }}
+                            >
+                              → {s.label}
+                            </Link>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 ))}
+                {typing && (
+                  <p className="t-label" style={{ color: 'var(--muted)' }}>
+                    {mentor.name} is typing…
+                  </p>
+                )}
+                {msgs.filter((m) => m.from === 'user').length === 0 && !typing && (
+                  <div className="flex flex-wrap gap-1.5 pt-1">
+                    {mentor.suggested.map((s) => (
+                      <button
+                        key={s}
+                        onClick={() => send(s)}
+                        className="rounded-full border border-line px-3 py-1.5 t-label tr-micro hover:border-primary"
+                        style={{ color: 'var(--muted)' }}
+                      >
+                        {s}
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
-            )}
-          </div>
 
-          {/* composer */}
-          <form
-            className="flex items-center gap-2 border-t border-line p-3"
-            onSubmit={(e) => {
-              e.preventDefault();
-              send(input);
-            }}
-          >
-            <input
-              ref={inputRef}
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              placeholder={`Ask ${p.name}…`}
-              className="t-body min-w-0 flex-1 rounded-full border border-line px-4 py-2.5"
-              style={{ background: 'var(--bg)', color: 'var(--text)' }}
-              aria-label="Message"
-            />
-            <button
-              type="submit"
-              disabled={!input.trim() || typing}
-              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full tr-micro disabled:opacity-40"
-              style={{ background: 'var(--primary)', color: '#fff' }}
-              aria-label="Send"
-            >
-              <Send size={16} />
-            </button>
-          </form>
-          <p className="flex items-center gap-1 px-4 pb-2 t-label" style={{ color: 'var(--soft)' }}>
-            <Sparkles size={11} /> Grounded in your Uneek lessons · not a therapist
-          </p>
+              <form
+                className="flex items-center gap-2 border-t border-line p-3"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  send(input);
+                }}
+              >
+                <input
+                  ref={inputRef}
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  placeholder={`Talk to ${mentor.name}…`}
+                  className="t-body min-w-0 flex-1 rounded-full border border-line px-4 py-2.5"
+                  style={{ background: 'var(--bg)', color: 'var(--text)' }}
+                  aria-label="Message"
+                />
+                <button
+                  type="submit"
+                  disabled={!input.trim() || typing}
+                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full tr-micro disabled:opacity-40"
+                  style={{ background: 'var(--primary)', color: '#fff' }}
+                  aria-label="Send"
+                >
+                  <Send size={16} />
+                </button>
+              </form>
+              <p className="flex items-center gap-1 px-4 pb-2 t-label" style={{ color: 'var(--soft)' }}>
+                <Sparkles size={11} /> A learning companion — not a therapist
+              </p>
+            </>
+          )}
         </div>
       )}
     </>

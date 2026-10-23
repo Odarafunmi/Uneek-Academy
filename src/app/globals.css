@@ -274,6 +274,33 @@ select:focus-visible,
   background: rgba(15, 18, 38, 0.72);
 }
 
+/* ---- AI mentor chat: sized to stay clear of the navbar and launcher ---- */
+.mentor-launcher {
+  right: 1.25rem;
+  bottom: 1.25rem;
+}
+.mentor-panel {
+  bottom: 5.75rem;
+  height: min(620px, calc(100dvh - 13.5rem));
+  max-height: calc(100dvh - 13.5rem);
+}
+@media (min-width: 640px) {
+  .mentor-panel {
+    bottom: 5.5rem;
+    height: min(640px, calc(100dvh - 10.5rem));
+    max-height: calc(100dvh - 10.5rem);
+  }
+}
+/* small screens: full-width sheet with comfortable side margins */
+@media (max-width: 420px) {
+  .mentor-panel {
+    right: 0.5rem !important;
+    left: 0.5rem;
+    width: auto;
+    max-width: none;
+  }
+}
+
 /* Photo hover zoom (cards, mentors) */
 .zoom-on-hover {
   transition: transform 600ms cubic-bezier(0.2, 0.8, 0.2, 1);
@@ -378,6 +405,12 @@ select:focus-visible,
   margin-right: auto;
   padding-left: 64px;
   padding-right: 64px;
+}
+@media (max-width: 420px) {
+  .container-x {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
 }
 @media (max-width: 1023px) {
   .container-x {

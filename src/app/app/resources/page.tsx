@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import Link from 'next/link';
-import { KIND_LABELS, libraryArticles } from '@/content/resources';
+import { KIND_LABELS, KIND_COUNTS, libraryArticles } from '@/content/resources';
 import { useApp } from '@/lib/store';
 import { canDeleteArticle, canEditArticle, canManageContent } from '@/lib/rbac';
 import { SectionLabel, PillTag } from '@/components/ui';
@@ -11,7 +11,7 @@ import type { Article, ArticleKind } from '@/lib/types';
 
 const FILTERS: { id: 'all' | ArticleKind; label: string }[] = [
   { id: 'all', label: 'Everything' },
-  { id: 'blog', label: 'Blogs' },
+  { id: 'blog', label: 'Blogs & articles' },
   { id: 'paper', label: 'Research papers' },
   { id: 'guide', label: 'Study guides' },
 ];
@@ -25,7 +25,7 @@ const KIND_ICON: Record<ArticleKind, React.ReactNode> = {
 function ArticleCard({ a, children }: { a: Article; children?: React.ReactNode }) {
   return (
     <article className="flex flex-col rounded-card border border-line p-6">
-      <div className="flex items-center gap-2">
+      <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
         <span style={{ color: 'var(--primary)' }}>{KIND_ICON[a.kind]}</span>
         <span className="t-label" style={{ color: 'var(--primary)' }}>
           {KIND_LABELS[a.kind]}
@@ -36,12 +36,13 @@ function ArticleCard({ a, children }: { a: Article; children?: React.ReactNode }
       </div>
       <h3 className="t-h3 mt-3">{a.title}</h3>
       <p className="t-label mt-1" style={{ color: 'var(--muted)' }}>
+        {a.authors ? `${a.authors} · ` : ''}
         {a.source} · {a.date}
       </p>
       <p className="t-body mt-3 flex-1" style={{ color: 'var(--muted)' }}>
         {a.excerpt}
       </p>
-      <div className="mt-4 flex items-center justify-between gap-2">
+      <div className="mt-4 flex flex-wrap items-center justify-between gap-2">
         <Link
           href={`/app/resources/${a.slug}`}
           className="t-label tr-micro"
@@ -49,7 +50,20 @@ function ArticleCard({ a, children }: { a: Article; children?: React.ReactNode }
         >
           Read →
         </Link>
-        {children}
+        <div className="flex items-center gap-2">
+          {a.link && (
+            <a
+              href={a.link}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="t-label tr-micro"
+              style={{ color: 'var(--muted)' }}
+            >
+              Source ↗
+            </a>
+          )}
+          {children}
+        </div>
       </div>
     </article>
   );
@@ -202,13 +216,16 @@ export default function ResourcesPage() {
             aria-pressed={filter === f.id}
           >
             {f.label}
+            {f.id !== 'all' && (
+              <span style={{ opacity: 0.65 }}> · {KIND_COUNTS[f.id] ?? 0}</span>
+            )}
           </button>
         ))}
         <input
           value={q}
           onChange={(e) => setQ(e.target.value)}
           placeholder="Search the library…"
-          className="ml-auto w-full max-w-xs rounded-full border border-line px-4 py-2 t-body"
+          className="w-full rounded-full border border-line px-4 py-2 t-body sm:ml-auto sm:w-auto sm:max-w-xs"
           style={{ background: 'var(--bg)', color: 'var(--text)' }}
           aria-label="Search articles"
         />

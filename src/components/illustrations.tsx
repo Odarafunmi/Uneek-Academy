@@ -245,12 +245,11 @@ export function Logo({ light = false, className = '' }: { light?: boolean; class
         <path d="M9 8.5c1.5-1 3-1.5 5-1.5s3.5.5 5 1.5" stroke={light ? P.indigo : '#fff'} strokeWidth="2" strokeLinecap="round" fill="none" />
       </svg>
       <span
-        className="font-heading font-semibold tracking-tight"
+        className="max-w-[104px] truncate font-heading text-[15px] font-semibold tracking-tight sm:max-w-none sm:text-[19px]"
         style={{
           // `light` = forced white (photo / always-dark sections);
           // default follows the theme so it stays readable on any background.
           color: light ? '#FFFFFF' : 'var(--text)',
-          fontSize: 19,
         }}
       >
         Uneek Academy

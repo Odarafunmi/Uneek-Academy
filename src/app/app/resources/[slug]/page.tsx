@@ -41,16 +41,28 @@ export default function ArticlePage() {
 
       <h1 className="t-h1 mt-3">{article.title}</h1>
       <p className="t-body mt-3" style={{ color: 'var(--muted)' }}>
+        {article.authors ? `${article.authors} · ` : ''}
         {article.source} · {article.date}
         {article.authorName ? ` · ${article.authorName}` : ''}
       </p>
 
-      <div className="mt-4 flex flex-wrap gap-1.5">
+      <div className="mt-4 flex flex-wrap items-center gap-2">
         {article.tags.map((t) => (
           <PillTag key={t} tone="line">
             {t}
           </PillTag>
         ))}
+        {article.link && (
+          <a
+            href={article.link}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="t-label tr-micro"
+            style={{ color: 'var(--primary)', fontWeight: 600 }}
+          >
+            View source ↗
+          </a>
+        )}
       </div>
 
       <p

@@ -25,13 +25,17 @@ profile → redirected to `/auth`.
 - **Academy Home** — greeting, global streak chip, Today card (next lesson + course
   photo + progress ring), course catalog with photo cards and
   Enrolled / Available / Coming Soon states.
-- **AI Mentor chat** — a floating chat box with persona switching: general Uneek
-  Assistant, "Dr. Ayo" (Psychology Tutor), and "Kemi" (Communication Specialist).
-  Each persona carries a full system prompt + tone guidelines; responses are
-  grounded in the course corpus (lessons, concepts, try-ons) with links to the
-  exact day, and a course-context selector scopes answers to Psychology,
-  Communication, or everything. The engine is LLM-ready — `lib/mentor.ts`
-  exposes the system prompts and grounding context for a later API swap-in.
+- **AI Mentor chat** — a floating chat box built for natural tutoring, not search:
+  open follow-ups ("tell me more", "explain simpler"), clarifications, ideas and
+  scripts, with course links as a secondary flourish. Pick a **subject**
+  (General / Psychology / Communication) — when the subject has dedicated mentors,
+  a mentor list appears inside the chat (Dr. Ayo & Coach Ada for Psychology,
+  Kemi & Tunde for Communication) and each mentor has their own voice and system
+  prompt; subjects without mentors skip straight to the standard assistant.
+  Conversations are preserved per mentor. The engine is LLM-ready —
+  `lib/mentor.ts` exposes the system prompts, message history, and grounding
+  context for a later API swap-in. The panel is sized to sit cleanly below the
+  navbar at every viewport.
 - **Courses** — Psychology (Month 1 fully seeded, 28 days) and Communication
   (Week 1 fully seeded; later weeks follow the same template). Every learn day pairs
   a story-driven lesson with a hands-on **try-on** — a concrete action with exact
@@ -39,10 +43,13 @@ profile → redirected to `/auth`.
 - **Knowledge Test** (`/app/assessment`) — standalone adaptive self-assessment,
   separate from daily quizzes: pick a course, set your progress percentage, and
   get a test drawn strictly from the days/concepts inside that completion tier.
-- **Library** (`/app/resources`) — academic resources: blogs, research-paper
-  summaries, and study guides, with search + kind filters and a reading view.
-  Publishing/editing is strictly admin (role checks in `lib/rbac.ts`, shaped for
-  server-side RBAC at v3); admins manage content from the library page.
+- **Library** (`/app/resources`) — 71 resources and growing: 40 blog posts &
+  articles (Uneek Learning Lab originals plus verified external reads from
+  Scientific American, HBR, Greater Good, and more), 20+ research papers with
+  verifiable citations (DOI / Google Scholar links, authors, journals), and 8
+  study guides. Search, kind filters with counts, and a reading view with
+  "View source ↗" links. Publishing/editing is strictly admin (role checks in
+  `lib/rbac.ts`, shaped for server-side RBAC at v3).
 - **Course page** — month-by-month outline with month accent colors, day calendar
   (done / today / missed / rest / locked / shared states), and Continue CTA.
 - **Lesson player** — step cards with progress dots and storytelling blocks, reading /
@@ -113,7 +120,9 @@ follow the same weekly template and are outlined on the course page.
 - Psychology Month 1 and Communication Week 1 are fully seeded; remaining weeks follow
   the same weekly template (5 learn / 1 review / 1 rest) and unlock as content lands.
 - Responsive from 320px to ultrawide: cards, calendar, tables, and the completion-card
-  editor all adapt (the card preview auto-scales to the available width). Navbars
-  (landing + app) are sticky with a frosted-glass blur.
+  editor all adapt (the card preview auto-scales to the available width). The
+  navbar is minimal on every screen — streak, theme, profile, and a hamburger menu
+  holding Room / Courses / Knowledge Test / Library / History — with a sticky
+  frosted-glass blur on landing + app.
 - `NEXT_DIST_DIR=.next-build npm run build` produces a production build without
   touching the running dev server.

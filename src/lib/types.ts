@@ -109,9 +109,13 @@ export interface Article {
   kind: ArticleKind;
   /** publication / journal / author line */
   source: string;
+  /** paper authors / byline, when applicable */
+  authors?: string;
   date: string;
   /** estimated reading time in minutes */
   minutes: number;
+  /** verifiable source URL (DOI, journal page, or publisher page) */
+  link?: string;
   excerpt: string;
   /** body as simple paragraphs */
   body: string[];
