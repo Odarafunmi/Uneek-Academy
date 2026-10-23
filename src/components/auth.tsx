@@ -120,7 +120,7 @@ export function AuthForm({
         ))}
       </div>
 
-      <h2 className="t-h2 mt-6" style={{ fontSize: 30, lineHeight: '36px' }}>
+      <h2 className="t-h2 mt-5" style={{ fontSize: 30, lineHeight: '36px' }}>
         {isSignup ? 'Create your profile' : 'Welcome back'}
       </h2>
       <p className="t-small mt-2" style={{ color: 'var(--muted)' }}>
@@ -129,7 +129,7 @@ export function AuthForm({
           : 'Sign in to pick up your streak and continue learning.'}
       </p>
 
-      <div className="mt-7 space-y-4">
+      <div className="mt-5 space-y-4">
         {isSignup && (
           <Field icon={<User size={16} />} label="Name">
             <input
@@ -178,7 +178,7 @@ export function AuthForm({
         </p>
       )}
 
-      <button type="submit" disabled={busy} className="btn btn-primary mt-6 w-full">
+      <button type="submit" disabled={busy} className="btn btn-primary mt-5 w-full">
         {busy ? 'One moment…' : isSignup ? 'Create profile' : 'Sign in'} <Arrow />
       </button>
 
@@ -191,7 +191,7 @@ export function AuthForm({
         <GoogleGlyph /> Continue with Google (v3)
       </button>
 
-      <p className="t-body mt-6 text-center" style={{ color: 'var(--muted)' }}>
+      <p className="t-body mt-5 text-center" style={{ color: 'var(--muted)' }}>
         {isSignup ? 'Already have a profile? ' : 'New to Uneek? '}
         <button
           type="button"
@@ -260,7 +260,11 @@ export function AuthModal() {
       <div className="absolute inset-0" style={{ background: 'rgba(15,18,38,.55)' }} onClick={closeAuth} />
       <div
         className="relative grid w-full max-w-4xl overflow-hidden rounded-card shadow-md md:grid-cols-2"
-        style={{ background: 'var(--bg)', maxHeight: '92vh' }}
+        style={{
+          background: 'var(--bg)',
+          maxHeight: 'calc(100dvh - 2rem)',
+          gridAutoRows: 'minmax(0, 1fr)',
+        }}
       >
         {/* photo side */}
         <div className="relative hidden md:block">
@@ -273,8 +277,8 @@ export function AuthModal() {
             </p>
           </div>
         </div>
-        {/* form side */}
-        <div className="overflow-y-auto p-7 nice-scroll sm:p-10">
+        {/* form side — scrolls inside the card so nothing gets cut off */}
+        <div className="nice-scroll min-h-0 overflow-y-auto p-7 sm:p-10" style={{ maxHeight: 'calc(100dvh - 2rem)' }}>
           <div className="flex items-start justify-between">
             <div className="md:hidden">
               <Logo />
@@ -287,7 +291,7 @@ export function AuthModal() {
               <X size={16} />
             </button>
           </div>
-          <div className="mt-4 md:mt-8">
+          <div className="mt-4 md:mt-6">
             <AuthForm
               mode={authMode}
               onModeChange={(m) => openAuth(m, authIntent)}
