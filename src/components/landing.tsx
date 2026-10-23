@@ -131,7 +131,7 @@ export function AboutStats() {
           <div className="md:col-span-9">
             <h2 className="t-h2 max-w-3xl">
               This platform transforms learning with{' '}
-              <span style={{ color: 'var(--primary)' }}>expert guidance</span> and
+              <span style={{ color: 'var(--sky-text)' }}>expert guidance</span> and
               community support for flexible education.
             </h2>
           </div>
@@ -214,8 +214,13 @@ export function CoursesSection() {
       <div className="container-x">
         <div className="grid gap-8 md:grid-cols-12 md:gap-10">
           <div className="md:col-span-4">
-            <SectionLabel>Courses</SectionLabel>
-            <TwoToneHeadline line1="Courses That" line2="Open Your Future" />
+            <SectionLabel color="var(--cat-blog)">Courses</SectionLabel>
+            <TwoToneHeadline
+              line1="Courses That"
+              line2="Open Your Future"
+              highlight="Future"
+              accentColor="var(--cat-blog)"
+            />
           </div>
           <div className="md:col-span-8 md:pt-2">
             <p className="t-body-l max-w-2xl" style={{ color: 'var(--muted)' }}>
@@ -317,8 +322,13 @@ export function MentorsSection() {
       <div className="container-x">
         <div className="grid gap-8 md:grid-cols-12 md:gap-10">
           <div className="md:col-span-7">
-            <SectionLabel>Mentor</SectionLabel>
-            <TwoToneHeadline line1="Learn From" line2="Experienced Mentors" />
+            <SectionLabel color="var(--success-text)">Mentor</SectionLabel>
+            <TwoToneHeadline
+              line1="Learn From"
+              line2="Experienced Mentors"
+              highlight="Mentors"
+              accentColor="var(--success-text)"
+            />
           </div>
           <div className="md:col-span-5 md:pt-16 lg:pt-20">
             <p className="t-body" style={{ color: 'var(--muted)' }}>
@@ -381,8 +391,13 @@ export function HowItWorks() {
     <section id="how" className="section-pad">
       <div className="container-x grid items-center gap-10 md:grid-cols-2 md:gap-12">
         <div>
-          <SectionLabel>How It Works</SectionLabel>
-          <TwoToneHeadline line1="How You’ll" line2="Learn With Us" />
+          <SectionLabel color="var(--primary)">How It Works</SectionLabel>
+          <TwoToneHeadline
+            line1="How You’ll"
+            line2="Learn With Us"
+            highlight="Learn"
+            accentColor="var(--primary)"
+          />
           <ul className="mt-8 space-y-5">
             {[
               ['Browse the library', 'Choose a course that fits your goal — psychology is live now, with more on the way.'],
@@ -449,7 +464,7 @@ export function TestimonialSection() {
   return (
     <section className="section-pad">
       <div className="container-x max-w-3xl text-center">
-        <SectionLabel>Testimonials</SectionLabel>
+        <SectionLabel color="var(--danger-text)">Testimonials</SectionLabel>
         <blockquote className="t-h3 font-light">
           “{t.quote}”
         </blockquote>

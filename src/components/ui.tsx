@@ -2,10 +2,22 @@
 
 import React from 'react';
 
-export function SectionLabel({ children, light = false }: { children: React.ReactNode; light?: boolean }) {
+export function SectionLabel({
+  children,
+  light = false,
+  color,
+}: {
+  children: React.ReactNode;
+  light?: boolean;
+  /** accent bar color — vary per section to aid wayfinding */
+  color?: string;
+}) {
   return (
     <div className="mb-6 flex items-center gap-3">
-      <span className="h-[14px] w-[2px] rounded-full" style={{ background: light ? '#FFB020' : 'var(--primary)' }} />
+      <span
+        className="h-[14px] w-[2px] rounded-full"
+        style={{ background: color ?? (light ? '#FFB020' : 'var(--primary)') }}
+      />
       <span className="t-label" style={{ color: light ? 'rgba(255,255,255,.75)' : 'var(--muted)' }}>
         {children}
       </span>
@@ -21,6 +33,7 @@ export function TwoToneHeadline({
   line1,
   line2,
   highlight,
+  accentColor,
   className = '',
   light = false,
   as: Tag = 'h2',
@@ -29,6 +42,8 @@ export function TwoToneHeadline({
   line2?: string;
   /** phrase inside line2 rendered in the accent color */
   highlight?: string;
+  /** override the highlight color (defaults: amber on dark, primary on light) */
+  accentColor?: string;
   className?: string;
   light?: boolean;
   as?: 'h1' | 'h2' | 'h3';
@@ -40,7 +55,7 @@ export function TwoToneHeadline({
     return (
       <>
         {line2.slice(0, idx)}
-        <span style={{ color: light ? '#FFB020' : 'var(--primary)' }}>{highlight}</span>
+        <span style={{ color: accentColor ?? (light ? '#FFB020' : 'var(--primary)') }}>{highlight}</span>
         {line2.slice(idx + highlight.length)}
       </>
     );
@@ -141,13 +156,15 @@ export function PillTag({
   tone = 'tint',
 }: {
   children: React.ReactNode;
-  tone?: 'tint' | 'accent' | 'mint' | 'line' | 'coral';
+  tone?: 'tint' | 'accent' | 'mint' | 'line' | 'coral' | 'sky' | 'orange';
 }) {
   const styles: Record<string, React.CSSProperties> = {
     tint: { background: 'var(--primary-tint)', color: 'var(--primary)' },
     accent: { background: 'var(--accent-tint)', color: 'var(--ink)' },
     mint: { background: 'var(--success-tint)', color: 'var(--success-text)' },
     coral: { background: 'var(--danger-tint)', color: 'var(--danger-text)' },
+    sky: { background: 'var(--sky-tint)', color: 'var(--sky-text)' },
+    orange: { background: 'var(--cat-blog-tint)', color: 'var(--cat-blog)' },
     line: { background: 'transparent', color: 'var(--muted)', border: '1px solid var(--line)' },
   };
   return (

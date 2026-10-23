@@ -111,14 +111,23 @@ function CourseView({ slug }: { slug: string }) {
         </p>
         <div className="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           {course.months.map((m, i) => (
-            <div key={m.title} className="rounded-card border border-line p-6">
+            <div
+              key={m.title}
+              className="cat-hover rounded-card border p-6"
+              style={{
+                ['--card-accent' as string]: m.accent,
+                background: `${m.accent}1c`,
+                borderColor: `${m.accent}55`,
+              }}
+            >
               <div className="flex items-center gap-3">
                 <span
-                  className="flex h-9 w-9 items-center justify-center rounded-full t-label"
+                  className="flex h-9 w-9 items-center justify-center rounded-full t-label tr-micro"
                   style={{
                     background: m.accent,
                     color: m.accentText === 'white' ? '#fff' : '#0F1226',
                     fontWeight: 600,
+                    boxShadow: `0 4px 12px ${m.accent}55`,
                   }}
                 >
                   {i + 1}
@@ -128,8 +137,20 @@ function CourseView({ slug }: { slug: string }) {
               <p className="t-small mt-3" style={{ color: 'var(--muted)' }}>
                 {m.topics}
               </p>
-              <div className="t-label mt-4" style={{ color: 'var(--soft)' }}>
-                Weeks {weekRange(course.months, i)} · {m.weeks} weeks
+              <div className="mt-4 flex items-center gap-2">
+                <span
+                  className="t-label rounded-full px-3 py-1"
+                  style={{
+                    background: m.accent,
+                    color: m.accentText === 'white' ? '#fff' : '#0F1226',
+                    fontWeight: 600,
+                  }}
+                >
+                  Weeks {weekRange(course.months, i)}
+                </span>
+                <span className="t-label" style={{ color: 'var(--muted)' }}>
+                  · {m.weeks} weeks
+                </span>
               </div>
             </div>
           ))}
