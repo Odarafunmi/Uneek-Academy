@@ -90,7 +90,37 @@ export function AuthForm({
 
   return (
     <form onSubmit={submit} className="w-full">
-      <h2 className="t-h2" style={{ fontSize: 30, lineHeight: '36px' }}>
+      {/* always-visible mode switcher — sign in is one tap away for existing profiles */}
+      <div
+        className="flex gap-1 rounded-full border border-line p-1"
+        role="tablist"
+        aria-label="Profile access"
+      >
+        {(
+          [
+            ['signup', 'Create profile'],
+            ['signin', 'Sign in'],
+          ] as ['signup' | 'signin', string][]
+        ).map(([id, label]) => (
+          <button
+            key={id}
+            type="button"
+            role="tab"
+            aria-selected={mode === id}
+            onClick={() => onModeChange(id)}
+            className="flex-1 rounded-full px-3 py-2 t-label tr-micro"
+            style={{
+              background: mode === id ? 'var(--primary)' : 'transparent',
+              color: mode === id ? '#fff' : 'var(--muted)',
+              fontWeight: mode === id ? 700 : 500,
+            }}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+
+      <h2 className="t-h2 mt-6" style={{ fontSize: 30, lineHeight: '36px' }}>
         {isSignup ? 'Create your profile' : 'Welcome back'}
       </h2>
       <p className="t-small mt-2" style={{ color: 'var(--muted)' }}>
@@ -161,15 +191,15 @@ export function AuthForm({
         <GoogleGlyph /> Continue with Google (v3)
       </button>
 
-      <p className="t-small mt-6 text-center" style={{ color: 'var(--muted)' }}>
-        {isSignup ? 'Already have a local profile?' : 'New here?'}{' '}
+      <p className="t-body mt-6 text-center" style={{ color: 'var(--muted)' }}>
+        {isSignup ? 'Already have a profile? ' : 'New to Uneek? '}
         <button
           type="button"
-          className="t-small"
-          style={{ color: 'var(--primary)', fontWeight: 600 }}
+          className="t-body underline tr-micro"
+          style={{ color: 'var(--primary)', fontWeight: 700 }}
           onClick={() => onModeChange(isSignup ? 'signin' : 'signup')}
         >
-          {isSignup ? 'Sign in' : 'Create one'}
+          {isSignup ? 'Sign in here' : 'Create your profile'}
         </button>
       </p>
     </form>
