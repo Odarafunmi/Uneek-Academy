@@ -108,6 +108,8 @@ export function MentorChat() {
     setInput('');
     setTyping(true);
     const reply = askMentor(q, mentorId, subject, history);
+    // a beat of "thinking" proportional to the reply — feels like typing, not stamping
+    const delay = Math.min(1600, 500 + reply.text.length * 3);
     window.setTimeout(() => {
       setTyping(false);
       setSessions((s) => ({
@@ -117,7 +119,7 @@ export function MentorChat() {
           { from: 'mentor', text: reply.text, sources: reply.sources, mentorId },
         ],
       }));
-    }, 500);
+    }, delay);
   }
 
   return (

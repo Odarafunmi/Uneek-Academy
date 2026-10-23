@@ -27,15 +27,17 @@ profile → redirected to `/auth`.
   Enrolled / Available / Coming Soon states.
 - **AI Mentor chat** — a floating chat box built for natural tutoring, not search:
   open follow-ups ("tell me more", "explain simpler"), clarifications, ideas and
-  scripts, with course links as a secondary flourish. Pick a **subject**
-  (General / Psychology / Communication) — when the subject has dedicated mentors,
-  a mentor list appears inside the chat (Dr. Ayo & Coach Ada for Psychology,
-  Kemi & Tunde for Communication) and each mentor has their own voice and system
-  prompt; subjects without mentors skip straight to the standard assistant.
-  Conversations are preserved per mentor. The engine is LLM-ready —
-  `lib/mentor.ts` exposes the system prompts, message history, and grounding
-  context for a later API swap-in. The panel is sized to sit cleanly below the
-  navbar at every viewport.
+  scripts. Mentors answer **beyond the syllabus too** — general knowledge, life
+  questions, maths, opinions, small talk — in a warm, human voice (they remember
+  your name within a chat, admit when they don't know, and keep course links as a
+  secondary flourish). Pick a **subject** (General / Psychology / Communication) —
+  when the subject has dedicated mentors, a mentor list appears inside the chat
+  (Dr. Ayo & Coach Ada for Psychology, Kemi & Tunde for Communication) and each
+  mentor has their own voice and system prompt; subjects without mentors skip
+  straight to the standard assistant. Conversations are preserved per mentor. The
+  engine is LLM-ready — `lib/mentor.ts` exposes `askMentor(...)`, the system
+  prompts, message history, and grounding context for a later API swap-in. The
+  panel is sized to sit cleanly below the navbar at every viewport.
 - **Courses** — Psychology (Month 1 fully seeded, 28 days) and Communication
   (Week 1 fully seeded; later weeks follow the same template). Every learn day pairs
   a story-driven lesson with a hands-on **try-on** — a concrete action with exact
