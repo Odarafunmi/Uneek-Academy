@@ -528,7 +528,7 @@ function VideoCard({ video }: { video?: LessonVideo }) {
         <div className="max-w-xl">
           <p className="t-body">{video.title}</p>
           <p className="t-small mt-1" style={{ color: 'var(--muted)' }}>
-            <strong style={{ color: 'var(--ink)' }}>Why this video:</strong> {video.note}
+            <strong style={{ color: 'var(--text)' }}>Why this video:</strong> {video.note}
           </p>
         </div>
         <a

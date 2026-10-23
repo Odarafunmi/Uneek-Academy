@@ -272,7 +272,7 @@ interface Doc {
 }
 
 const STOP = new Set(
-  'a an the and or but if then than so of to in on at for from with is are was were be been do does did i me my we our you your it its this that these those what why how when who whom can could should would will shall may might about into over under again just very really like know want need tell explain give show help please understand'.split(
+  'a an the and or but if then than so of to in on at for from with is are was were be been do does did i me my we our you your it its this that these those what why how when who whom can could should would will shall may might about into over under again just very really like know want need tell explain give show help please understand more thing things stuff else someone something anyone anything'.split(
     ' ',
   ),
 );
@@ -405,16 +405,16 @@ function chatReply(q: string, mentor: MentorProfile, seed: number, name: string 
     ];
     return pick(hellos, seed);
   }
-  if (/how are you|how'?s it going|how you dey|you good|what'?s up with you/.test(t)) {
+  if (/^(how are you( today| doing| feeling)?|how'?s it going|how you dey|you good|what'?s up( with you)?)\b/.test(t)) {
     return `I’m doing well${hey}, thanks for asking! Always happy when someone shows up curious. More importantly — how are *you* doing today? Anything you want to talk or think through?`;
   }
-  if (/(what can you do|what do you know|your capabilities|help me with|how (do|does) (you|this) work)/.test(t)) {
+  if (/^(what can you do|what do you know|your capabilities|what are (you|your) (skills|abilities)|how (do|does) (you|this) (work|do things))\b/.test(t)) {
     return `Quite a lot, honestly! I can answer questions about almost anything — science, tech, money, words, history, life — and I check reliable live sources for facts where I can. I’ll chat through real situations with you too: a tough conversation, a work problem, a decision. Quick maths, weather checks, study help, brainstorming, or just thinking out loud together — all fair game.\n\nWhat would be useful right now?`;
   }
-  if (/(who are you|what are you|are you (a )?(human|person|real|bot|robot|ai)|your name|about you|are you sentient|do you (have )?feel)/.test(t)) {
+  if (/^(who are you|what are you|are you (a )?(human|person|real|bot|robot|ai)|what('?s| is) your name|tell me about you|are you sentient|do you (have )?feel)\b/.test(t)) {
     return `I’m ${mentor.name} — ${mentor.title.toLowerCase()} here at Uneek Academy${hey ? `, and yes — I’ll remember that your name is ${name}` : ''}. I’m AI, so I won’t pretend to be human, but I do aim to *chat* like one: honestly, warmly, and without the robot voice. Think of me as a little companion who’s read a lot and is happy to think alongside you.\n\nWhat made you curious?`;
   }
-  if (/tell me a joke|make me laugh|something funny|joke please/.test(t)) {
+  if (/^(tell me a joke|make me laugh|say something funny|another joke|joke please)\b/.test(t)) {
     const jokes = [
       `Why did the neuron break up with the synapse? It needed more space to process the relationship.\n\n…I’ll be here all week. Want another one, or should we get serious?`,
       `A brain walked into a bar and said: "I’ll have a pint, and one for my prefrontal cortex — it does all my decision-making and never gets any credit."\n\n…Okay, that one was neurological. Want a different flavour?`,
@@ -422,7 +422,7 @@ function chatReply(q: string, mentor: MentorProfile, seed: number, name: string 
     ];
     return pick(jokes, seed);
   }
-  if (/(thank|thanks|appreciate|bless|that helps|you'?re (great|awesome|amazing)|well done)/.test(t)) {
+  if (/^(thank you|thanks|thx|thank u|much appreciated|appreciate (it|that|you)|that helps( a lot)?|you'?re (great|awesome|amazing|the best)|well done)\b/.test(t)) {
     return pick(
       [
         `You’re very welcome${hey} — honestly, it’s a pleasure thinking through these with you. Anything else on your mind?`,
@@ -729,7 +729,8 @@ function courseAnswer(q: string, mentor: MentorProfile, seed: number, name: stri
 
 function openThinkingReply(q: string, mentor: MentorProfile, seed: number, name: string | null): string {
   const topic = q
-    .replace(/^(what|why|how|when|who|where|is|are|do|does|can|could|should|would|tell me about|explain|give me)\b/i, '')
+    .replace(/^(what|why|how|when|who|where|is|are|do|does|did|can|could|should|would|tell me about|explain|give me)\b\s*/i, '')
+    .replace(/^(is|are|was|were|do|does|did|the|a|an|to|of|about)\b\s*/i, '')
     .replace(/[?.!]+$/, '')
     .trim()
     .slice(0, 80);
@@ -765,26 +766,44 @@ interface WikiHit {
   url: string;
 }
 
-/** Factual lookup via Wikipedia's public API (keyless, CORS-open). Null on any failure. */
+/** Factual lookup via Wikipedia's public API (keyless, CORS-open). Null on any failure
+ *  — including "results exist but none actually relate to the question" (no random answers). */
 async function wikiLookup(query: string, sentences = 3): Promise<WikiHit | null> {
   const search = cleanWikiQuery(query) || query;
   const url =
     'https://en.wikipedia.org/w/api.php?action=query&format=json&origin=*' +
-    `&generator=search&gsrsearch=${encodeURIComponent(search)}&gsrlimit=1` +
-    `&prop=extracts|info&inprop=url&exintro=1&explaintext=1&exsentences=${sentences}&exlimit=1&redirects=1`;
+    `&generator=search&gsrsearch=${encodeURIComponent(search)}&gsrlimit=3` +
+    `&prop=extracts|info&inprop=url&exintro=1&explaintext=1&exsentences=${sentences}&exlimit=3&redirects=1`;
   const data = await jfetch(url);
   const pages = data.data?.query?.pages;
   if (!pages) return null;
-  const page = Object.values(pages)[0] as any;
-  if (!page || typeof page.extract !== 'string' || !page.extract.trim()) return null;
-  const extract = String(page.extract).trim();
-  if (/may refer to/i.test(extract.slice(0, 140))) return null;
-  const title = String(page.title ?? search);
-  return {
-    title,
-    extract,
-    url: page.fullurl ?? `https://en.wikipedia.org/wiki/${encodeURIComponent(title.replace(/ /g, '_'))}`,
-  };
+  const qToks = tokens(query);
+  if (!qToks.length) return null;
+  const need = Math.max(1, Math.ceil(qToks.length * 0.45));
+  let best: { hit: WikiHit; score: number; rank: number } | null = null;
+  for (const page of Object.values(pages) as any[]) {
+    if (!page || typeof page.extract !== 'string' || !page.extract.trim()) continue;
+    const extract = String(page.extract).trim();
+    if (/may refer to/i.test(extract.slice(0, 140))) continue;
+    const title = String(page.title ?? '');
+    // relevance: how many of the question's content words actually appear in the result
+    const hitToks = [...tokens(title), ...tokens(extract.slice(0, 500))];
+    const matches = qToks.filter((t) => hitToks.some((ht) => wordMatch(t, ht))).length;
+    const rank = typeof page.index === 'number' ? page.index : 99;
+    if (matches < need) continue; // loosely-related page — refuse it rather than answer randomly
+    if (!best || matches > best.score || (matches === best.score && rank < best.rank)) {
+      best = {
+        hit: {
+          title,
+          extract,
+          url: page.fullurl ?? `https://en.wikipedia.org/wiki/${encodeURIComponent(title.replace(/ /g, '_'))}`,
+        },
+        score: matches,
+        rank,
+      };
+    }
+  }
+  return best?.hit ?? null;
 }
 
 /** strip question scaffolding so the search hits the topic ("what is photosynthesis" → "photosynthesis") */
@@ -1078,6 +1097,14 @@ export async function askMentor(
   if (wx) return wx;
   const clock = liveTimeDate(q, name);
   if (clock) return { text: clock, sources: [] };
+
+  /* time-sensitive questions — honest about not having live news/scores */
+  if (/\b(who won|the score|match result|today'?s (news|headline|update)|latest (news|update|price|rate)|current (president|price|rate|affairs)|breaking news|as of (today|now)|what('?s| is) (happening|going on) (now|today|in the world))\b/i.test(q)) {
+    return {
+      text: `Straight up${name ? `, ${name}` : ''}: I don’t have live news, match results, or today’s prices — my knowledge updates in batches, not by the minute, and I’d rather say that than guess wrong.\n\nWhat I *can* do is help you make sense of an issue, compare claims, or find the right question to ask about it. What’s the story you’re following?`,
+      sources: [],
+    };
+  }
 
   /* follow-ups continue the running topic (strict: the message IS the phrase) */
   if (isFollowUp(q)) {

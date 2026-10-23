@@ -8,6 +8,24 @@ import { SectionLabel, PillTag } from '@/components/ui';
 import { Arrow } from '@/components/ui';
 import { FileText } from 'lucide-react';
 
+/** tiny renderer for **bold** inside article paragraphs */
+function Bold({ text }: { text: string }) {
+  const parts = text.split(/(\*\*[^*]+\*\*)/g);
+  return (
+    <>
+      {parts.map((p, i) =>
+        p.startsWith('**') && p.endsWith('**') ? (
+          <strong key={i} style={{ fontWeight: 700 }}>
+            {p.slice(2, -2)}
+          </strong>
+        ) : (
+          <span key={i}>{p}</span>
+        ),
+      )}
+    </>
+  );
+}
+
 export default function ArticlePage() {
   const params = useParams<{ slug: string }>();
   const slug = params?.slug;
@@ -60,24 +78,30 @@ export default function ArticlePage() {
             className="t-label tr-micro"
             style={{ color: 'var(--primary)', fontWeight: 600 }}
           >
-            View source ↗
+            {article.kind === 'blog' ? 'Further reading ↗' : 'View source ↗'}
           </a>
         )}
       </div>
 
       <p
         className="t-body-l mt-8 rounded-card p-5"
-        style={{ background: 'var(--mist)', color: 'var(--ink)' }}
+        style={{ background: 'var(--mist)', color: 'var(--text)' }}
       >
         {article.excerpt}
       </p>
 
       <div className="mt-8 space-y-5">
-        {article.body.map((p, i) => (
-          <p key={i} className="t-body-l" style={{ lineHeight: 1.75 }}>
-            {p}
-          </p>
-        ))}
+        {article.body.map((p, i) =>
+          p.startsWith('## ') ? (
+            <h2 key={i} className="t-h3 pt-3">
+              {p.slice(3)}
+            </h2>
+          ) : (
+            <p key={i} className="t-body-l" style={{ lineHeight: 1.75 }}>
+              <Bold text={p} />
+            </p>
+          ),
+        )}
       </div>
 
       {article.courseSlug && (

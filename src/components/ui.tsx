@@ -47,7 +47,7 @@ export function TwoToneHeadline({
   };
   return (
     <Tag className={`t-h2 ${className}`}>
-      <span style={{ color: light ? 'var(--soft)' : 'var(--soft)', fontWeight: 300 }}>{line1}</span>
+      <span style={{ color: light ? '#c6cbe0' : 'var(--soft)', fontWeight: 300 }}>{line1}</span>
       {line2 ? (
         <>
           <br />
