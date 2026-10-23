@@ -5,6 +5,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { Logo } from '@/components/illustrations';
 import { StreakChip } from '@/components/ui';
 import { ThemeToggle } from '@/components/theme';
+import { MentorChat } from '@/components/mentor-chat';
 import { useApp } from '@/lib/store';
 import { useEffect, useState } from 'react';
 import { LogOut } from 'lucide-react';
@@ -12,6 +13,8 @@ import { LogOut } from 'lucide-react';
 const navLinks = [
   { href: '/app', label: 'Home' },
   { href: '/app/courses/psychology', label: 'Courses' },
+  { href: '/app/assessment', label: 'Knowledge Test' },
+  { href: '/app/resources', label: 'Library' },
   { href: '/app/history', label: 'History' },
   { href: '/app/profile', label: 'Profile' },
 ];
@@ -42,7 +45,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-screen" style={{ background: 'var(--bg)' }}>
-      <header className="sticky top-0 z-40 border-b border-line" style={{ background: 'var(--bg)' }}>
+      <header className="nav-frost sticky top-0 z-[1000] border-b border-line">
         <div className="container-x flex h-16 items-center justify-between gap-3">
           <Link href="/app" aria-label="Academy home" className="shrink-0">
             <Logo />
@@ -96,6 +99,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         </nav>
       </header>
       <main className="container-x py-8 md:py-10">{children}</main>
+      <MentorChat />
     </div>
   );
 }

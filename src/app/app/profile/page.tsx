@@ -8,7 +8,8 @@ import { SectionLabel, ProgressRing, PillTag, StreakChip } from '@/components/ui
 import { ThemeToggle } from '@/components/theme';
 
 export default function ProfilePage() {
-  const { profile, setProfile, progress, enrolled, streak, hydrated, reset } = useApp();
+  const { profile, setProfile, progress, enrolled, streak, hydrated, reset, account, setRole } =
+    useApp();
   const [mounted, setMounted] = useState(false);
   const [name, setName] = useState('');
   useEffect(() => {
@@ -136,6 +137,31 @@ export default function ProfilePage() {
           </div>
           <ThemeToggle />
         </div>
+      </section>
+
+      <section>
+        <h2 className="t-h3">Access &amp; role</h2>
+        <div className="mt-4 flex items-center justify-between gap-4 rounded-card border border-line p-5">
+          <div>
+            <div className="t-body" style={{ fontWeight: 500 }}>
+              Role: {account?.role === 'admin' ? 'Administrator' : 'Learner'}
+            </div>
+            <div className="t-small mt-0.5" style={{ color: 'var(--muted)' }}>
+              {account?.role === 'admin'
+                ? 'You can publish and manage library content. Admin permissions run through lib/rbac.ts.'
+                : 'Learners read the library. Admins can publish, edit, and manage its content.'}
+            </div>
+          </div>
+          <button
+            className="btn btn-ghost shrink-0"
+            onClick={() => setRole(account?.role === 'admin' ? 'learner' : 'admin')}
+          >
+            {account?.role === 'admin' ? 'Revoke admin' : 'Grant admin (demo)'}
+          </button>
+        </div>
+        <p className="t-label mt-2" style={{ color: 'var(--soft)' }}>
+          Demo control for local accounts — becomes server-enforced RBAC with the v3 backend.
+        </p>
       </section>
 
       <section>

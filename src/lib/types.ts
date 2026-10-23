@@ -1,5 +1,8 @@
 export type LessonType = 'reading' | 'video' | 'interactive' | 'review' | 'rest';
 
+/** Account role — content publishing is admin-only (see lib/rbac.ts). */
+export type Role = 'learner' | 'admin';
+
 export type QuestionKind = 'mcq' | 'truefalse' | 'scenario';
 
 export interface ExerciseQuestion {
@@ -93,6 +96,31 @@ export interface LessonVideo {
   by: string;
   /** why this video fits the day */
   note: string;
+}
+
+/** Library content kind. */
+export type ArticleKind = 'blog' | 'paper' | 'guide';
+
+/** Academic library item — blog, research-paper summary, or study guide. */
+export interface Article {
+  id: string;
+  slug: string;
+  title: string;
+  kind: ArticleKind;
+  /** publication / journal / author line */
+  source: string;
+  date: string;
+  /** estimated reading time in minutes */
+  minutes: number;
+  excerpt: string;
+  /** body as simple paragraphs */
+  body: string[];
+  tags: string[];
+  /** related course slug, when the piece maps to one */
+  courseSlug?: string;
+  /** user-created (admin) content, stored locally */
+  custom?: boolean;
+  authorName?: string;
 }
 
 export interface CourseMonth {

@@ -8,11 +8,15 @@ import { Arrow } from './ui';
 import { X, Lock, Mail, User } from 'lucide-react';
 
 /**
- * Engagement gate: signed-in users go straight to the app;
- * visitors get the sign up / sign in pop-up first.
+ * Engagement gate + enroll routing:
+ * - Active session → route straight into the course module / dashboard.
+ * - No local accounts on this device (new user) → Sign Up / profile creation.
+ * - Accounts exist but nobody is signed in (returning user) → Sign In.
+ * The sign up / sign in pop-up appears at the moment of registration.
  */
 export function useEngage() {
   const account = useApp((s) => s.account);
+  const accounts = useApp((s) => s.accounts);
   const openAuth = useApp((s) => s.openAuth);
   const enroll = useApp((s) => s.enroll);
   const router = useRouter();
@@ -25,9 +29,22 @@ export function useEngage() {
         router.push(intent.href);
       }
     } else {
-      openAuth('signup', intent);
+      const hasLocalAccounts = Object.keys(accounts ?? {}).length > 0;
+      openAuth(hasLocalAccounts ? 'signin' : 'signup', intent);
     }
   };
+}
+
+/** Build the /auth deep-link for a pending intent (used by routed CTAs). */
+export function authHrefFor(intent: Exclude<AuthIntent, null>): string {
+  const next =
+    intent.kind === 'enroll' ? `/app/courses/${intent.slug}` : intent.href;
+  const params = new URLSearchParams({ next });
+  if (intent.kind === 'enroll') {
+    params.set('intent', 'enroll');
+    params.set('slug', intent.slug);
+  }
+  return `/auth?${params.toString()}`;
 }
 
 /**
@@ -253,16 +270,30 @@ export function AuthModal() {
   );
 }
 
-/** Standalone route: /auth?mode=signup|signin&next=/app/courses/psychology */
+/** Standalone route: /auth?mode=signup|signin&next=/app/courses/psychology&intent=enroll&slug=psychology */
 export function AuthPageClient() {
   const params = useSearchParams();
   const router = useRouter();
   const account = useApp((s) => s.account);
-  const openAuth = useApp((s) => s.openAuth);
+  const accounts = useApp((s) => s.accounts);
+  const enroll = useApp((s) => s.enroll);
   const [mode, setMode] = useState<'signup' | 'signin'>(
-    params.get('mode') === 'signin' ? 'signin' : 'signup',
+    params.get('mode') === 'signin'
+      ? 'signin'
+      : params.get('mode') === 'signup'
+        ? 'signup'
+        : // no explicit mode: new device → Sign Up, returning visitor → Sign In
+          Object.keys(accounts ?? {}).length > 0
+          ? 'signin'
+          : 'signup',
   );
   const next = params.get('next') || '/app';
+  const enrollSlug = params.get('intent') === 'enroll' ? params.get('slug') : null;
+
+  const handleSuccess = () => {
+    if (enrollSlug) enroll(enrollSlug);
+    router.push(next);
+  };
 
   return (
     <div className="flex min-h-screen">
@@ -284,7 +315,7 @@ export function AuthPageClient() {
           <AuthForm
             mode={mode}
             onModeChange={setMode}
-            onSuccess={() => router.push(next)}
+            onSuccess={handleSuccess}
           />
           <p className="t-small mt-8 text-center" style={{ color: 'var(--muted)' }}>
             Just browsing?{' '}

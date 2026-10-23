@@ -257,6 +257,23 @@ select:focus-visible,
   font-weight: 600;
 }
 
+/* ---- Frosted-glass sticky navbars ---- */
+.nav-frost {
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  background: rgba(255, 255, 255, 0.85);
+}
+[data-theme='dark'] .nav-frost {
+  background: rgba(15, 18, 38, 0.85);
+}
+/* landing header sits over dark imagery — dark glass keeps white text readable
+   both over the hero and over light sections when scrolled */
+.nav-frost-dark {
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  background: rgba(15, 18, 38, 0.72);
+}
+
 /* Photo hover zoom (cards, mentors) */
 .zoom-on-hover {
   transition: transform 600ms cubic-bezier(0.2, 0.8, 0.2, 1);

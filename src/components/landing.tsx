@@ -20,7 +20,7 @@ export function LandingNav() {
     { href: '#mentors', label: 'Mentors' },
   ];
   return (
-    <header className="absolute inset-x-0 top-0 z-30">
+    <header className="nav-frost-dark sticky top-0 z-[1000]">
       <div className="container-x flex items-center justify-between py-5 md:py-6">
         <Link href="/" aria-label="Uneek Academy home">
           <Logo light />
@@ -90,7 +90,7 @@ export function Hero() {
             'linear-gradient(to top, rgba(15,18,38,.85) 0%, rgba(15,18,38,.45) 38%, rgba(15,18,38,0) 68%)',
         }}
       />
-      <div className="container-x relative flex min-h-[640px] flex-col justify-end pb-12 pt-32 sm:min-h-[720px] md:min-h-[820px] md:pb-20">
+      <div className="container-x relative flex min-h-[640px] flex-col justify-end pb-12 pt-16 sm:min-h-[720px] md:min-h-[820px] md:pb-20">
         <div className="flex flex-col gap-8 md:flex-row md:items-end md:justify-between md:gap-10">
           <div className="max-w-2xl">
             <DashMarker />

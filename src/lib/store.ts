@@ -2,9 +2,12 @@
 
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
+import { canDeleteArticle, canEditArticle, canManageContent } from './rbac';
 import type {
+  Article,
   CourseProgress,
   DayProgress,
+  Role,
   ThemePref,
   UserProfile,
 } from './types';
@@ -29,6 +32,13 @@ export interface LocalAccount {
   /** SHA-256 (with per-email salt) — never a plaintext password */
   passwordHash: string;
   createdAt: string;
+  /** access role — content publishing is admin-only (lib/rbac.ts) */
+  role: Role;
+}
+
+/** Admin-published library item stored on this device (until the backend lands). */
+export interface CustomArticle extends Article {
+  authorEmail: string;
 }
 
 export interface AccountData {
@@ -85,6 +95,14 @@ export interface AppState {
   signOut: () => void;
   openAuth: (mode?: 'signup' | 'signin', intent?: AuthIntent) => void;
   closeAuth: () => void;
+  /** grant / revoke admin role on the signed-in local account (demo until server RBAC) */
+  setRole: (role: Role) => void;
+
+  /* library (admin-published content) */
+  customArticles: CustomArticle[];
+  publishArticle: (a: Omit<Article, 'id' | 'slug' | 'custom'>) => string | null;
+  updateArticle: (id: string, a: Partial<Article>) => string | null;
+  deleteArticle: (id: string) => void;
 
   /* course actions */
   setTheme: (t: ThemePref) => void;
@@ -169,6 +187,7 @@ export const useApp = create<AppState>()(
           email: key,
           passwordHash: await hashPassword(key, password),
           createdAt: todayKey(),
+          role: 'learner',
         };
         // First signup on this device adopts any existing local progress.
         const data = snapshot(s);
@@ -214,6 +233,59 @@ export const useApp = create<AppState>()(
 
       setTheme: (theme) => set({ theme }),
       setProfile: (profile) => set({ profile }),
+
+      setRole: (role) =>
+        set((s) => {
+          if (!s.account) return s;
+          const account = { ...s.account, role };
+          return {
+            account,
+            accounts: { ...s.accounts, [account.email]: account },
+          };
+        }),
+
+      customArticles: [],
+      publishArticle: (a) => {
+        const s = get();
+        if (!s.account) return 'Sign in to publish.';
+        if (!canManageContent(s.account.role)) return 'Only admins can publish content.';
+        if (!a.title.trim() || !a.body.length) return 'Title and body are required.';
+        const slug = a.title
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, '-')
+          .replace(/(^-|-$)/g, '')
+          .slice(0, 60) || `article-${Date.now()}`;
+        const article: CustomArticle = {
+          ...a,
+          id: `local-${Date.now()}`,
+          slug,
+          custom: true,
+          authorEmail: s.account.email,
+          authorName: s.account.name,
+        };
+        set({ customArticles: [article, ...s.customArticles] });
+        return null;
+      },
+      updateArticle: (id, patch) => {
+        const s = get();
+        if (!s.account) return 'Sign in to edit.';
+        const existing = s.customArticles.find((c) => c.id === id);
+        if (!existing) return 'Article not found.';
+        if (!canEditArticle(s.account.role, existing, s.account.email))
+          return 'You can only edit your own posts.';
+        set({
+          customArticles: s.customArticles.map((c) => (c.id === id ? { ...c, ...patch } : c)),
+        });
+        return null;
+      },
+      deleteArticle: (id) =>
+        set((s) => {
+          if (!s.account) return s;
+          const existing = s.customArticles.find((c) => c.id === id);
+          if (!existing) return s;
+          if (!canDeleteArticle(s.account.role, existing, s.account.email)) return s;
+          return { customArticles: s.customArticles.filter((c) => c.id !== id) };
+        }),
 
       enroll: (courseSlug) =>
         set((s) =>

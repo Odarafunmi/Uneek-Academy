@@ -25,10 +25,24 @@ profile → redirected to `/auth`.
 - **Academy Home** — greeting, global streak chip, Today card (next lesson + course
   photo + progress ring), course catalog with photo cards and
   Enrolled / Available / Coming Soon states.
+- **AI Mentor chat** — a floating chat box with persona switching: general Uneek
+  Assistant, "Dr. Ayo" (Psychology Tutor), and "Kemi" (Communication Specialist).
+  Each persona carries a full system prompt + tone guidelines; responses are
+  grounded in the course corpus (lessons, concepts, try-ons) with links to the
+  exact day, and a course-context selector scopes answers to Psychology,
+  Communication, or everything. The engine is LLM-ready — `lib/mentor.ts`
+  exposes the system prompts and grounding context for a later API swap-in.
 - **Courses** — Psychology (Month 1 fully seeded, 28 days) and Communication
   (Week 1 fully seeded; later weeks follow the same template). Every learn day pairs
   a story-driven lesson with a hands-on **try-on** — a concrete action with exact
   words to borrow, sized for timid speakers and quiet learners.
+- **Knowledge Test** (`/app/assessment`) — standalone adaptive self-assessment,
+  separate from daily quizzes: pick a course, set your progress percentage, and
+  get a test drawn strictly from the days/concepts inside that completion tier.
+- **Library** (`/app/resources`) — academic resources: blogs, research-paper
+  summaries, and study guides, with search + kind filters and a reading view.
+  Publishing/editing is strictly admin (role checks in `lib/rbac.ts`, shaped for
+  server-side RBAC at v3); admins manage content from the library page.
 - **Course page** — month-by-month outline with month accent colors, day calendar
   (done / today / missed / rest / locked / shared states), and Continue CTA.
 - **Lesson player** — step cards with progress dots and storytelling blocks, reading /
@@ -79,6 +93,16 @@ follow the same weekly template and are outlined on the course page.
 
 - Profiles and progress live in this browser only (v1). When v3 lands, local accounts
   migrate to Google sign-in + Supabase sync.
+- **Enroll routing**: "Enroll now" checks local storage — new users get Sign Up /
+  profile creation, returning visitors get Sign In, and signed-in sessions go
+  straight into the course module. The pop-up appears at the moment of registration.
+- **Mentor chat** answers from the course corpus locally (no API key needed); each
+  persona ships with its production system prompt in `src/lib/mentor.ts` so a real
+  LLM can be wired in behind the same interface. The mentor is a learning coach,
+  not a therapist — distress questions are routed to professional support.
+- **Admin roles** are enforced client-side via `src/lib/rbac.ts` (the single source
+  of truth for permissions); grant admin on the Profile page ("Grant admin (demo)")
+  to try the publishing flow. Server-side enforcement arrives with the v3 backend.
 - **Video lessons use curated YouTube picks** (TED / TED-Ed, chosen per topic with a
   preference for high views and engagement): Judson Brewer on habits (autopilot day),
   Katherine Hampsten on miscommunication, Lisa Genova on forgetting, Julia Galef on
@@ -89,6 +113,7 @@ follow the same weekly template and are outlined on the course page.
 - Psychology Month 1 and Communication Week 1 are fully seeded; remaining weeks follow
   the same weekly template (5 learn / 1 review / 1 rest) and unlock as content lands.
 - Responsive from 320px to ultrawide: cards, calendar, tables, and the completion-card
-  editor all adapt (the card preview auto-scales to the available width).
+  editor all adapt (the card preview auto-scales to the available width). Navbars
+  (landing + app) are sticky with a frosted-glass blur.
 - `NEXT_DIST_DIR=.next-build npm run build` produces a production build without
   touching the running dev server.
