@@ -111,7 +111,7 @@ function CourseView({ slug }: { slug: string }) {
         </p>
         <div className="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           {course.months.map((m, i) => {
-            const fg = m.accentText === 'white' ? '#fff' : '#0F1226';
+            const fg = '#fff';
             return (
               <div
                 key={m.title}
@@ -120,14 +120,15 @@ function CourseView({ slug }: { slug: string }) {
                   ['--card-accent' as string]: m.accent,
                   background: m.accent,
                   borderColor: m.accent,
+                  textShadow: '0 1px 2px rgba(15,18,38,.32)',
                 }}
               >
                 <div className="flex items-center gap-3">
                   <span
                     className="flex h-9 w-9 items-center justify-center rounded-full t-label tr-micro"
                     style={{
-                      background: fg,
-                      color: m.accent,
+                      background: '#0F1226',
+                      color: '#fff',
                       fontWeight: 700,
                     }}
                   >
@@ -144,8 +145,8 @@ function CourseView({ slug }: { slug: string }) {
                   <span
                     className="t-label rounded-full px-3 py-1"
                     style={{
-                      background: fg,
-                      color: m.accent,
+                      background: '#0F1226',
+                      color: '#fff',
                       fontWeight: 700,
                     }}
                   >

@@ -58,7 +58,7 @@ export default function ArticlePage() {
           className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 t-label"
           style={{
             background: KIND_COLORS[article.kind].text,
-            color: KIND_COLORS[article.kind].tint,
+            color: '#fff',
             fontWeight: 600,
           }}
         >
@@ -98,7 +98,11 @@ export default function ArticlePage() {
 
       <p
         className="t-body-l mt-8 rounded-card p-5"
-        style={{ background: 'var(--mist)', color: 'var(--text)' }}
+        style={{
+          background: 'var(--mist)',
+          color: 'var(--text)',
+          borderLeft: `4px solid ${KIND_COLORS[article.kind].text}`,
+        }}
       >
         {article.excerpt}
       </p>
@@ -106,7 +110,7 @@ export default function ArticlePage() {
       <div className="mt-8 space-y-5">
         {article.body.map((p, i) =>
           p.startsWith('## ') ? (
-            <h2 key={i} className="t-h3 pt-3">
+            <h2 key={i} className="t-h3 pt-3" style={{ color: KIND_COLORS[article.kind].text }}>
               {p.slice(3)}
             </h2>
           ) : (

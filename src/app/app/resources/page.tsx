@@ -223,7 +223,7 @@ export default function ResourcesPage() {
               style={{
                 borderColor: active ? (c ? c.text : 'var(--primary)') : c ? c.text : 'var(--line)',
                 background: active ? (c ? c.text : 'var(--primary)') : 'var(--bg)',
-                color: active ? (c ? c.tint : 'var(--on-primary)') : c ? c.text : 'var(--text)',
+                color: active ? '#fff' : c ? c.text : 'var(--text)',
                 fontWeight: active ? 600 : 500,
               }}
               aria-pressed={active}

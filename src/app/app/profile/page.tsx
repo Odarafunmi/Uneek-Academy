@@ -80,9 +80,16 @@ export default function ProfilePage() {
           ['Total XP', String(totalXP)],
           ['Current streak', `${streak.current}`],
           ['Best streak', `${streak.longest}`],
-        ].map(([label, value]) => (
+        ].map(([label, value], i) => (
           <div key={label} className="rounded-card border border-line p-5 text-center">
-            <div className="t-stat" style={{ fontSize: 32, lineHeight: '36px' }}>
+            <div
+              className="t-stat"
+              style={{
+                fontSize: 32,
+                lineHeight: '36px',
+                color: ['var(--primary)', 'var(--success-text)', 'var(--danger-text)', 'var(--cat-blog)'][i % 4],
+              }}
+            >
               {value}
             </div>
             <div className="t-label mt-1" style={{ color: 'var(--muted)' }}>
@@ -102,8 +109,12 @@ export default function ProfilePage() {
               const done = Object.values(cp?.days ?? {}).filter((d) => d.done).length;
               const total = lessonsForCourse(c.slug).length;
               return (
-                <div key={c.slug} className="flex items-center gap-5 rounded-card border border-line p-5">
-                  <ProgressRing value={done} max={Math.max(total, 1)} size={56} label={`${done}d`} />
+                <div
+                  key={c.slug}
+                  className="flex items-center gap-5 rounded-card border border-line p-5"
+                  style={{ borderLeft: `5px solid ${c.months[0]?.accent ?? '#4F46E5'}` }}
+                >
+                  <ProgressRing value={done} max={Math.max(total, 1)} size={56} label={`${done}d`} color={c.months[0]?.accent ?? '#4F46E5'} />
                   <div className="flex-1">
                     <div className="t-h4">{c.title}</div>
                     <div className="t-small mt-0.5" style={{ color: 'var(--muted)' }}>

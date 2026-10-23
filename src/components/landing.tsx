@@ -268,7 +268,6 @@ function CourseOverviewCard({
 }) {
   const live = course.status === 'live';
   const accent = course.months[0]?.accent ?? '#4F46E5';
-  const accentFg = course.months[0]?.accentText === 'white' ? '#fff' : '#0F1226';
   return (
     <article className="flex flex-col">
       <div className="relative overflow-hidden">
@@ -281,8 +280,9 @@ function CourseOverviewCard({
           className="absolute left-4 top-4 rounded-full px-3 py-1.5 t-label"
           style={{
             background: live ? accent : '#0F1226',
-            color: live ? accentFg : '#fff',
+            color: '#fff',
             fontWeight: 600,
+            textShadow: '0 1px 2px rgba(15,18,38,.3)',
           }}
         >
           {live ? 'Enrolling now' : 'Coming soon'}

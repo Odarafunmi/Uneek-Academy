@@ -94,8 +94,8 @@ export default function AssessmentPage() {
               const active = slug === c.slug;
               const cc =
                 c.slug === 'communication'
-                  ? { border: 'var(--sky)', bg: 'var(--sky-tint)', fg: 'var(--sky-text)' }
-                  : { border: 'var(--primary)', bg: 'var(--primary-tint)', fg: 'var(--primary)' };
+                  ? { border: 'var(--sky)', bg: 'var(--sky)', fg: '#fff' }
+                  : { border: 'var(--primary)', bg: 'var(--primary)', fg: '#fff' };
               return (
                 <button
                   key={c.slug}

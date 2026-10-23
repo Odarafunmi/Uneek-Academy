@@ -87,6 +87,7 @@ function TodayCard({ course }: { course: CourseConfig }) {
   const next = lessons.find((l) => !days[l.dayIndex]?.done) ?? lessons[0];
   const doneCount = Object.values(days).filter((d) => d.done).length;
   const accent = accentForMonth(next?.month ?? 1);
+  const chipColor = course.months[0]?.accent ?? '#4F46E5';
   const xp = progress?.xp ?? 0;
 
   return (
@@ -99,8 +100,21 @@ function TodayCard({ course }: { course: CourseConfig }) {
             className="hidden h-20 w-20 shrink-0 rounded-[12px] object-cover sm:block"
           />
           <div className="min-w-0">
-            <div className="t-label" style={{ color: 'var(--muted)' }}>
-              {course.title} · Day {next.dayIndex} of {course.totalDays}
+            <div className="flex flex-wrap items-center gap-2">
+              <span
+                className="t-label rounded-full px-2.5 py-1"
+                style={{
+                  background: chipColor,
+                  color: '#fff',
+                  fontWeight: 600,
+                  textShadow: '0 1px 2px rgba(15,18,38,.3)',
+                }}
+              >
+                {course.title}
+              </span>
+              <span className="t-label" style={{ color: 'var(--muted)' }}>
+                Day {next.dayIndex} of {course.totalDays}
+              </span>
             </div>
             <h3 className="t-h4 mt-1">{next.title}</h3>
             <div className="mt-2 flex flex-wrap items-center gap-2">
@@ -190,6 +204,7 @@ function CatalogCard({ course }: { course: CourseConfig }) {
                   size={44}
                   stroke={4}
                   label={`${doneCount}d`}
+                  color={accent}
                 />
               </div>
               <Link href={`/app/courses/${course.slug}`} className="btn btn-primary">
