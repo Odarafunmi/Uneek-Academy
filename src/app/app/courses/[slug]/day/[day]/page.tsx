@@ -460,7 +460,7 @@ function VideoCard({ video }: { video?: LessonVideo }) {
                 <path d="M8 5.5v13l11-6.5z" />
               </svg>
             </span>
-            <span className="t-label rounded-full px-3.5 py-1.5" style={{ background: 'rgba(15,18,38,.65)', color: '#fff' }}>
+            <span className="t-label rounded-full px-3.5 py-1.5" style={{ background: '#0F1226', color: '#fff' }}>
               Video coming soon
             </span>
           </div>
@@ -517,7 +517,7 @@ function VideoCard({ video }: { video?: LessonVideo }) {
                   <path d="M8 5.5v13l11-6.5z" />
                 </svg>
               </span>
-              <span className="t-label rounded-full px-3.5 py-1.5" style={{ background: 'rgba(15,18,38,.65)', color: '#fff' }}>
+              <span className="t-label rounded-full px-3.5 py-1.5" style={{ background: '#0F1226', color: '#fff' }}>
                 Play · {video.title}
               </span>
             </div>

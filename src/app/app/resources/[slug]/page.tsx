@@ -57,8 +57,8 @@ export default function ArticlePage() {
         <span
           className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 t-label"
           style={{
-            background: KIND_COLORS[article.kind].tint,
-            color: KIND_COLORS[article.kind].text,
+            background: KIND_COLORS[article.kind].text,
+            color: KIND_COLORS[article.kind].tint,
             fontWeight: 600,
           }}
         >

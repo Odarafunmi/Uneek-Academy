@@ -267,6 +267,8 @@ function CourseOverviewCard({
   onCta: () => void;
 }) {
   const live = course.status === 'live';
+  const accent = course.months[0]?.accent ?? '#4F46E5';
+  const accentFg = course.months[0]?.accentText === 'white' ? '#fff' : '#0F1226';
   return (
     <article className="flex flex-col">
       <div className="relative overflow-hidden">
@@ -278,8 +280,9 @@ function CourseOverviewCard({
         <span
           className="absolute left-4 top-4 rounded-full px-3 py-1.5 t-label"
           style={{
-            background: live ? 'var(--primary)' : 'rgba(15,18,38,.72)',
-            color: live ? '#fff' : '#fff',
+            background: live ? accent : '#0F1226',
+            color: live ? accentFg : '#fff',
+            fontWeight: 600,
           }}
         >
           {live ? 'Enrolling now' : 'Coming soon'}
@@ -293,7 +296,7 @@ function CourseOverviewCard({
       <ul className="mt-4 space-y-2 border-t border-line pt-4">
         {highlights.slice(0, 4).map((h) => (
           <li key={h} className="flex gap-2.5 t-small" style={{ color: 'var(--muted)' }}>
-            <span className="mt-[9px] h-1 w-1 shrink-0 rounded-full" style={{ background: 'var(--primary)' }} />
+            <span className="mt-[9px] h-1.5 w-1.5 shrink-0 rounded-full" style={{ background: accent }} />
             {h}
           </li>
         ))}

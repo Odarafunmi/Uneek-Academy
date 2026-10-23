@@ -27,12 +27,12 @@ function ArticleCard({ a, children }: { a: Article; children?: React.ReactNode }
   return (
     <article
       className="cat-hover flex flex-col rounded-card border border-line p-6"
-      style={{ ['--card-accent' as string]: c.line }}
+      style={{ ['--card-accent' as string]: c.text }}
     >
       <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
         <span
           className="flex h-7 w-7 items-center justify-center rounded-full tr-micro"
-          style={{ background: c.tint, color: c.text }}
+          style={{ background: c.text, color: c.tint }}
           aria-hidden="true"
         >
           {KIND_ICON[a.kind]}
@@ -221,16 +221,16 @@ export default function ResourcesPage() {
               onClick={() => setFilter(f.id)}
               className="tap rounded-full border px-4 py-2 t-label"
               style={{
-                borderColor: active ? (c ? c.text : 'var(--primary)') : c ? c.line : 'var(--line)',
-                background: active ? (c ? c.tint : 'var(--primary-tint)') : 'var(--bg)',
-                color: active ? (c ? c.text : 'var(--primary)') : 'var(--text)',
+                borderColor: active ? (c ? c.text : 'var(--primary)') : c ? c.text : 'var(--line)',
+                background: active ? (c ? c.text : 'var(--primary)') : 'var(--bg)',
+                color: active ? (c ? c.tint : 'var(--on-primary)') : c ? c.text : 'var(--text)',
                 fontWeight: active ? 600 : 500,
               }}
               aria-pressed={active}
             >
               {f.label}
               {f.id !== 'all' && (
-                <span style={{ opacity: 0.65 }}> · {KIND_COUNTS[f.id] ?? 0}</span>
+                <span> · {KIND_COUNTS[f.id] ?? 0}</span>
               )}
             </button>
           );

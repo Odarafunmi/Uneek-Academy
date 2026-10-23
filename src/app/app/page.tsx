@@ -27,7 +27,7 @@ export default function AcademyHome() {
           <SectionLabel>Academy Home</SectionLabel>
           <h1 className="t-h1">
             {greeting()},{' '}
-            <span style={{ fontWeight: 400 }}>{profile?.name ?? 'learner'}</span>
+            <span style={{ fontWeight: 600, color: 'var(--name-accent)' }}>{profile?.name ?? 'learner'}</span>
           </h1>
           <p className="t-body-l mt-3" style={{ color: 'var(--muted)' }}>
             Small steps, visible progress. Here is where you left off.
@@ -150,7 +150,7 @@ function CatalogCard({ course }: { course: CourseConfig }) {
         {!isLive && (
           <span
             className="absolute left-3.5 top-3.5 rounded-full px-3 py-1.5 t-label"
-            style={{ background: 'rgba(15,18,38,.72)', color: '#fff' }}
+            style={{ background: '#0F1226', color: '#fff' }}
           >
             Coming soon
           </span>

@@ -43,6 +43,7 @@
   --sky: #0e86c9;
   --sky-tint: #e2f2fd;
   --sky-text: #0b6a9e;
+  --name-accent: #c2410c;
   --radius-pill: 999px;
   --radius-card: 16px;
   --radius-input: 12px;
@@ -77,6 +78,7 @@
   --sky: #56bff0;
   --sky-tint: #0f2c3e;
   --sky-text: #7fd0f5;
+  --name-accent: #ffb020;
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
   --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.4);
   color-scheme: dark;
