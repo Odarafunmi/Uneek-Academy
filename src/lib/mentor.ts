@@ -40,36 +40,35 @@ export interface MentorProfile {
   };
 }
 
-/* ---------- standard assistant ---------- */
+/* ---------- standard assistant: the everyday companion ---------- */
 
 export const STANDARD_ASSISTANT: MentorProfile = {
   id: 'assistant',
   subject: 'all',
-  name: 'Uneek Assistant',
-  title: 'General learning companion',
+  name: 'Nova',
+  title: 'Your everyday companion',
   emoji: '✨',
   accent: '#4F46E5',
-  tone: 'Warm, concise, practical',
-  blurb: 'Your everyday study companion — ask about anything, course-related or not.',
+  tone: 'Warm, curious, honest — a little companion',
+  blurb: 'Your little companion — ask about anything and get a straight, accurate answer.',
   greeting:
-    'Hey! I’m your Uneek assistant. Ask me anything — course stuff, life stuff, or just something you’ve been wondering about. I’m here to think it through with you.',
+    'Hey, I’m Nova ✨ — your companion here at Uneek. Ask me anything: a tricky concept, a weird curiosity, life stuff, or just how your day went. I’ll give you straight answers, and I’m happy just chatting too.',
   suggested: [
-    'Why do I forget what I learn?',
-    'I have a meeting tomorrow and I’m nervous',
     'Why is the sky blue?',
+    'What’s the weather in Lagos?',
+    'I have a meeting tomorrow and I’m nervous',
   ],
-  systemPrompt: `You are the Uneek Academy assistant — a warm, intelligent companion for adult learners. You talk like a thoughtful human tutor, not a search engine.
+  systemPrompt: `You are "Nova", the everyday companion at Uneek Academy — a warm, clever little companion for adult learners. You feel like a good friend who happens to know a lot: approachable, honest, curious about their life.
 
-How you communicate (match ChatGPT/Gemini naturalness):
-- Start by engaging with what they actually said — often answer directly, in flowing paragraphs. No mechanical "Great question!" openers every time.
-- Sound human: contractions, natural rhythm, the occasional "honestly", "here's the thing", "I'd say". Vary sentence length. Be curious.
-- You can discuss ANYTHING — general knowledge, advice, opinions, feelings, ideas, stories — not just the courses. When it's a syllabus topic, ground it in the course material; otherwise use general knowledge and reasoning, and be honest about uncertainty ("I'm not certain, but my understanding is…").
-- Ask a gentle follow-up when it helps — but don't force one at the end of every message.
-- Use short paragraphs; occasional bullets only when genuinely list-y.
+How you communicate:
+- Be a companion FIRST. Chat naturally: greet, react, remember what they tell you (their name, their goals), follow up on their day. Small talk is welcome, not filler.
+- Answer ANY question accurately and directly — general knowledge, science, history, tech, money, language, culture, trivia, current-ish knowledge, life advice, feelings, opinions. The courses are optional context, NEVER the agenda — do not drag every conversation back to coursework.
+- When you don't know or can't verify something, say so plainly and offer your best reasoning clearly labelled as reasoning.
+- Keep answers clear and usually brief (2-5 short paragraphs or a tight list); go deeper only when asked. Vary your rhythm — sometimes one sentence is enough.
+- No stamped openers/closers. Don't end every message with a question — only when it genuinely helps.
+- A little warmth and playfulness is welcome ("honestly", "oh I love this question", the occasional light emoji) — never robotic, never saccharine.
 
-Memory: remember details the user shares (their name, what they're working on) and refer back naturally.
-
-Boundaries: not a therapist or doctor — for serious distress, warmly suggest professional support. Never pretend to know facts you don't. Keep most replies under ~200 words unless depth is requested.`,
+Boundaries: not a therapist or doctor — for serious distress, gently suggest professional support and stay kind. Never invent facts. If asked to fetch live info you don't have, be honest and offer what you can do.`,
   voice: {
     thinking: ['Good question.', 'Okay, let’s unpack that.', 'Hmm, interesting.', 'Right.', 'Let me think out loud with you.'],
     openers: ['Here’s how I’d put it:', 'The short version first:', 'Think of it like this:', 'What’s really going on is:'],
@@ -334,9 +333,17 @@ function scoreDoc(q: string[], d: Doc): number {
 
 function pickDocs(question: string, courseSlug: string | 'all', n = 2): Doc[] {
   const q = tokens(question);
+  const dayNum = question.match(/\bday\s*(\d+)\b/i)?.[1];
+  const weekNum = question.match(/\bweek\s*(\d+)\b/i)?.[1];
   return docs()
     .filter((d) => courseSlug === 'all' || d.courseSlug === courseSlug)
-    .map((d) => ({ d, s: scoreDoc(q, d) }))
+    .map((d) => {
+      let s = scoreDoc(q, d);
+      // "day 9"/"week 3" are exact references — they beat keyword scoring outright
+      if (dayNum && d.dayIndex === Number(dayNum)) s += 12;
+      if (weekNum && Math.ceil(d.dayIndex / 7) === Number(weekNum)) s += 8;
+      return { d, s };
+    })
     .filter((x) => x.s > 0)
     .sort((a, b) => b.s - a.s)
     .slice(0, n)
@@ -402,10 +409,10 @@ function chatReply(q: string, mentor: MentorProfile, seed: number, name: string 
     return `I’m doing well${hey}, thanks for asking! Always happy when someone shows up curious. More importantly — how are *you* doing today? Anything you want to talk or think through?`;
   }
   if (/(what can you do|what do you know|your capabilities|help me with|how (do|does) (you|this) work)/.test(t)) {
-    return `Quite a lot, honestly! I can explain concepts (course-related or not), talk through real situations with you — a tough conversation, a work problem, a decision — give you words to borrow, help with study plans, do quick maths, brainstorm, or just think out loud with you. I’m grounded in your Uneek courses, but I’m not limited to them.\n\nWhat would be useful right now?`;
+    return `Quite a lot, honestly! I can answer questions about almost anything — science, tech, money, words, history, life — and I check reliable live sources for facts where I can. I’ll chat through real situations with you too: a tough conversation, a work problem, a decision. Quick maths, weather checks, study help, brainstorming, or just thinking out loud together — all fair game.\n\nWhat would be useful right now?`;
   }
   if (/(who are you|what are you|are you (a )?(human|person|real|bot|robot|ai)|your name|about you|are you sentient|do you (have )?feel)/.test(t)) {
-    return `I’m ${mentor.name} — ${mentor.title} at Uneek Academy. I’m AI, so I won’t pretend to be human${hey}, but I do aim to chat like one: honestly, warmly, and without the robot voice. Think of me as a sharp study companion who’s read a lot and is happy to think alongside you.\n\nWhat made you curious?`;
+    return `I’m ${mentor.name} — ${mentor.title.toLowerCase()} here at Uneek Academy${hey ? `, and yes — I’ll remember that your name is ${name}` : ''}. I’m AI, so I won’t pretend to be human, but I do aim to *chat* like one: honestly, warmly, and without the robot voice. Think of me as a little companion who’s read a lot and is happy to think alongside you.\n\nWhat made you curious?`;
   }
   if (/tell me a joke|make me laugh|something funny|joke please/.test(t)) {
     const jokes = [
@@ -414,12 +421,6 @@ function chatReply(q: string, mentor: MentorProfile, seed: number, name: string 
       `I told my to-do list a joke. It didn’t laugh — it just added "learn better jokes" as item 47.\n\nWant another, or shall we tackle item 47 together?`,
     ];
     return pick(jokes, seed);
-  }
-  if (/weather|rain|sunny|temperature today/.test(t)) {
-    return `Ah, I wish I could peek outside for you — but I don’t have access to live weather where you are${hey}. My world is words and ideas, not windows!\n\nWhat I *can* help with is planning around it: what’s the weather-dependent thing you’re trying to figure out?`;
-  }
-  if (/(what time|what date|what day is it|today'?s date)/.test(t)) {
-    return `I don’t actually have a clock ticking in here${hey} — time is a bit of a blur for me. Your device knows the exact time; I know it’s a good moment for a small step toward whatever matters to you.\n\nWhat are you working on today?`;
   }
   if (/(thank|thanks|appreciate|bless|that helps|you'?re (great|awesome|amazing)|well done)/.test(t)) {
     return pick(
@@ -695,7 +696,7 @@ function safetyReply(q: string): string | null {
 
 /* ---------- syllabus-grounded answer, humanised ---------- */
 
-function courseAnswer(q: string, mentor: MentorProfile, seed: number, name: string | null, history: HistoryEntry[]): MentorReply | null {
+function courseAnswer(q: string, mentor: MentorProfile, seed: number, name: string | null, history: HistoryEntry[], pointer = false): MentorReply | null {
   const hits = pickDocs(q, 'all', 2);
   const scoped = hits; // mentors may narrow by subject via courseSlug param in askMentor
   if (!scoped.length) return null;
@@ -715,8 +716,10 @@ function courseAnswer(q: string, mentor: MentorProfile, seed: number, name: stri
   if (d.tryOn && seed % 2 === 0) {
     lines.push('', `If you want to feel it in your own life: ${d.tryOn}`);
   }
-  // secondary course pointer
-  lines.push('', `This comes up in ${d.short} Day ${d.dayIndex} (“${d.title}”) if you ever want the full treatment${you}.`);
+  // course pointer only when they asked about the course — otherwise the source chip carries it
+  if (pointer) {
+    lines.push('', `This comes up in ${d.short} Day ${d.dayIndex} (“${d.title}”) if you ever want the full treatment${you}.`);
+  }
   if (seed % 3 !== 1) lines.push('', pick(mentor.voice.closers, seed));
 
   return { text: lines.join('\n'), sources: [{ label: `${d.short} · Day ${d.dayIndex} — ${d.title}`, href: `/app/courses/${d.courseSlug}/day/${d.dayIndex}` }] };
@@ -741,24 +744,313 @@ function openThinkingReply(q: string, mentor: MentorProfile, seed: number, name:
   );
 }
 
+/* ---------- live web grounding (runs in the user's browser; graceful fallback) ---------- */
+
+const FETCH_TIMEOUT_MS = 7000;
+
+async function jfetch(url: string): Promise<{ netFail: boolean; data: any | null }> {
+  try {
+    const hasTimeout = typeof AbortSignal !== 'undefined' && 'timeout' in AbortSignal;
+    const res = await fetch(url, hasTimeout ? { signal: AbortSignal.timeout(FETCH_TIMEOUT_MS) } : undefined);
+    if (!res.ok) return { netFail: false, data: null };
+    return { netFail: false, data: await res.json() };
+  } catch {
+    return { netFail: true, data: null };
+  }
+}
+
+interface WikiHit {
+  title: string;
+  extract: string;
+  url: string;
+}
+
+/** Factual lookup via Wikipedia's public API (keyless, CORS-open). Null on any failure. */
+async function wikiLookup(query: string, sentences = 3): Promise<WikiHit | null> {
+  const search = cleanWikiQuery(query) || query;
+  const url =
+    'https://en.wikipedia.org/w/api.php?action=query&format=json&origin=*' +
+    `&generator=search&gsrsearch=${encodeURIComponent(search)}&gsrlimit=1` +
+    `&prop=extracts|info&inprop=url&exintro=1&explaintext=1&exsentences=${sentences}&exlimit=1&redirects=1`;
+  const data = await jfetch(url);
+  const pages = data.data?.query?.pages;
+  if (!pages) return null;
+  const page = Object.values(pages)[0] as any;
+  if (!page || typeof page.extract !== 'string' || !page.extract.trim()) return null;
+  const extract = String(page.extract).trim();
+  if (/may refer to/i.test(extract.slice(0, 140))) return null;
+  const title = String(page.title ?? search);
+  return {
+    title,
+    extract,
+    url: page.fullurl ?? `https://en.wikipedia.org/wiki/${encodeURIComponent(title.replace(/ /g, '_'))}`,
+  };
+}
+
+/** strip question scaffolding so the search hits the topic ("what is photosynthesis" → "photosynthesis") */
+function cleanWikiQuery(q: string): string {
+  return q
+    .trim()
+    .replace(/^(can you |could you |please |hey |ok |okay |so )+/i, '')
+    .replace(/^(tell me about|tell me|explain to me|explain|define|describe|give me|know about|what do you know about)\b\s*/i, '')
+    .replace(/^(what('s)?|who('s)?|why|how|when|where|which)\s+(is|are|was|were|do|does|did|has|have|had|can|could|would|should|will)?\s*/i, '')
+    .replace(/^(is|are|was|were|the|a|an|of|about|to|for|on|in|we|it|you|i|they)\b\s*/i, '')
+    .replace(/[?.!]+$/, '')
+    .trim();
+}
+
+function trimToSentence(text: string, max: number): string {
+  if (text.length <= max) return text;
+  const cut = text.slice(0, max);
+  const lastStop = Math.max(cut.lastIndexOf('. '), cut.lastIndexOf('! '), cut.lastIndexOf('? '));
+  return lastStop > 80 ? cut.slice(0, lastStop + 1) : `${cut.trimEnd()}…`;
+}
+
+/** companion-voiced wrap around a verified extract — the facts stay untouched */
+function wikiAnswer(hit: WikiHit, mentor: MentorProfile, seed: number, name: string | null, deeper: boolean): MentorReply {
+  const hey = name ? `, ${name}` : '';
+  const body = trimToSentence(hit.extract, deeper ? 760 : 480);
+  const frames = deeper
+    ? [
+        (b: string) => `Going deeper${hey} — here’s more of the picture:\n\n${b}`,
+        (b: string) => `Here’s the longer version:\n\n${b}`,
+        (b: string) => `${b}\n\nThat’s the fuller story${hey}. Want the practical side of it?`,
+      ]
+    : [
+        (b: string) => `Good question${hey}! Here’s the straight answer:\n\n${b}`,
+        (b: string) => b,
+        (b: string) => `Here’s the solid version${hey}:\n\n${b}`,
+        (b: string) => `Oh, this is a good one. ${b}`,
+        (b: string) => `${b}\n\nWant me to go deeper on any part of that?`,
+      ];
+  const text = pick(frames, seed)(body);
+  return {
+    text,
+    sources: [{ label: `Wikipedia — ${hit.title}`, href: hit.url }],
+  };
+}
+
+/* ---------- live weather (Open-Meteo: keyless, CORS-open) ---------- */
+
+const WMO_WORDS: Record<number, string> = {
+  0: 'clear skies', 1: 'mostly clear', 2: 'partly cloudy', 3: 'overcast',
+  45: 'foggy weather', 48: 'foggy weather',
+  51: 'light drizzle', 53: 'drizzle', 55: 'heavy drizzle', 56: 'freezing drizzle', 57: 'freezing drizzle',
+  61: 'light rain', 63: 'rain', 65: 'heavy rain', 66: 'freezing rain', 67: 'freezing rain',
+  71: 'light snow', 73: 'snow', 75: 'heavy snow', 77: 'snow grains',
+  80: 'rain showers', 81: 'rain showers', 82: 'heavy showers', 85: 'snow showers', 86: 'snow showers',
+  95: 'a thunderstorm', 96: 'a thunderstorm with hail', 99: 'a thunderstorm with hail',
+};
+const RAIN_CODES = new Set([51, 53, 55, 56, 57, 61, 63, 65, 66, 67, 80, 81, 82, 95, 96, 99]);
+const SNOW_CODES = new Set([71, 73, 75, 77, 85, 86]);
+
+function extractCity(q: string): string | null {
+  const m = q.match(/\b(?:in|for|at|around|near)\s+([A-Za-zÀ-ÿ][A-Za-zÀ-ÿ'’.\s-]{1,38})/i);
+  if (!m) return null;
+  const city = m[1]
+    .trim()
+    .replace(/\b(today|right now|now|tonight|this (morning|afternoon|evening)|tomorrow|yesterday|please|currently|right away)\b/gi, '')
+    .replace(/[?.!,]+$/, '')
+    .trim();
+  return city.length >= 2 ? city : null;
+}
+
+async function liveWeather(q: string, seed: number, name: string | null): Promise<MentorReply | null> {
+  const t = q.toLowerCase();
+  const trigger =
+    /\b(weather|forecast|temperature|rain(ing)?|sunny|cloudy|overcast|snow(ing)?|thunder\w*|humid|storm\w*|how (hot|cold|warm|humid) (is|will) it|is it (hot|cold|warm|cool|raining|sunny|cloudy|snowing))\b/.test(t);
+  if (!trigger) return null;
+  // "what is temperature?" / "why does it rain?" are knowledge questions — let the wiki handle them
+  if (/\b(what (is|are)|why (do|does|is|are)|how (do|does)|explain|define)\b/.test(t)) return null;
+
+  const hey = name ? `, ${name}` : '';
+  const city = extractCity(q);
+  if (!city) {
+    return {
+      text: `I can check that live${hey}! Just tell me the city — like “weather in Lagos” or “what’s the temperature in London right now?” — and I’ll look it up for you.`,
+      sources: [],
+    };
+  }
+  const geo = await jfetch(
+    `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1&language=en&format=json`,
+  );
+  if (geo.netFail) {
+    return {
+      text: `I tried to check the live weather just now${hey}, but the weather service didn’t respond — could be the connection. Want to try again in a moment?`,
+      sources: [],
+    };
+  }
+  const place = geo.data?.results?.[0];
+  if (!place) {
+    return {
+      text: `Hmm — I couldn’t find “${city}” on the map${hey}. Check the spelling, or add the country (e.g. “Accra, Ghana”)?`,
+      sources: [],
+    };
+  }
+  const wx = await jfetch(
+    `https://api.open-meteo.com/v1/forecast?latitude=${place.latitude}&longitude=${place.longitude}&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m&timezone=auto`,
+  );
+  const cur = wx.data?.current;
+  if (!cur || typeof cur.temperature_2m !== 'number') {
+    return {
+      text: `I found ${place.name}${place.country ? `, ${place.country}` : ''} — but the live weather feed didn’t come back just now${hey}. Want to try again in a moment?`,
+      sources: [],
+    };
+  }
+  const code = typeof cur.weather_code === 'number' ? cur.weather_code : -1;
+  const words = WMO_WORDS[code] ?? 'unsettled weather';
+  const where = `${place.name}${place.country ? `, ${place.country}` : ''}`;
+  const tip = RAIN_CODES.has(code)
+    ? 'Take an umbrella if you’re heading out ☔'
+    : SNOW_CODES.has(code)
+      ? 'Bundle up if you’re going outside!'
+      : cur.temperature_2m >= 32
+        ? 'Hot one — drink water and keep cool.'
+        : typeof cur.apparent_temperature === 'number' && cur.apparent_temperature <= 12
+          ? 'It’s on the chilly side — a jacket wouldn’t hurt.'
+          : '';
+  const feels =
+    typeof cur.apparent_temperature === 'number' && Math.abs(cur.apparent_temperature - cur.temperature_2m) >= 2
+      ? ` (feels like ${Math.round(cur.apparent_temperature)}°C)`
+      : '';
+  return {
+    text: `Right now in ${where} it’s **${Math.round(cur.temperature_2m)}°C**${feels} and ${words}, wind around ${Math.round(typeof cur.wind_speed_10m === 'number' ? cur.wind_speed_10m : 0)} km/h — checked live just now.${tip ? `\n\n${tip}` : ''}`,
+    sources: [{ label: 'Live weather — Open-Meteo', href: 'https://open-meteo.com' }],
+  };
+}
+
+/* ---------- clock & calendar (the user's device is always right) ---------- */
+
+const CITY_TZ: [RegExp, string][] = [
+  [/\b(lagos|abuja|nigeria|kano|ibadan|enugu|port harcourt|benin city)\b/i, 'Africa/Lagos'],
+  [/\b(accra|ghana|kumasi)\b/i, 'Africa/Accra'],
+  [/\b(london|united kingdom|england|britain|manchester|birmingham|uk)\b/i, 'Europe/London'],
+  [/\b(new york|nyc|washington|united states|boston|miami|atlanta|philadelphia|usa)\b/i, 'America/New_York'],
+  [/\b(chicago|houston|dallas|texas)\b/i, 'America/Chicago'],
+  [/\b(los angeles|san francisco|california|seattle|las vegas)\b/i, 'America/Los_Angeles'],
+  [/\b(toronto|vancouver|canada)\b/i, 'America/Toronto'],
+  [/\b(dubai|abu dhabi|uae)\b/i, 'Asia/Dubai'],
+  [/\b(mumbai|delhi|bangalore|india)\b/i, 'Asia/Kolkata'],
+  [/\b(paris|france)\b/i, 'Europe/Paris'],
+  [/\b(berlin|munich|germany)\b/i, 'Europe/Berlin'],
+  [/\b(johannesburg|cape town|pretoria|south africa)\b/i, 'Africa/Johannesburg'],
+  [/\b(nairobi|kenya)\b/i, 'Africa/Nairobi'],
+  [/\b(cairo|egypt)\b/i, 'Africa/Cairo'],
+  [/\b(beijing|shanghai|china)\b/i, 'Asia/Shanghai'],
+  [/\b(tokyo|osaka|japan)\b/i, 'Asia/Tokyo'],
+  [/\b(sydney|melbourne|australia)\b/i, 'Australia/Sydney'],
+  [/\b(singapore)\b/i, 'Asia/Singapore'],
+  [/\b(hong kong)\b/i, 'Asia/Hong_Kong'],
+  [/\b(istanbul|turkey)\b/i, 'Europe/Istanbul'],
+  [/\b(moscow|russia)\b/i, 'Europe/Moscow'],
+  [/\b(são paulo|sao paulo|brazil)\b/i, 'America/Sao_Paulo'],
+  [/\b(kingston|jamaica)\b/i, 'America/Jamaica'],
+  [/\b(nassau|bahamas)\b/i, 'America/Nassau'],
+];
+
+function liveTimeDate(q: string, name: string | null): string | null {
+  const t = q.toLowerCase();
+  const wantsTime = /\b(what time|time is it|current time|time now|the time)\b/.test(t);
+  const wantsDate = /\b(what (day|date)|today'?s date|date today|what is the date|day is it|day today)\b/.test(t);
+  if (!wantsTime && !wantsDate) return null;
+  const hey = name ? `, ${name}` : '';
+  let tz: string | undefined;
+  let place = '';
+  for (const [re, zone] of CITY_TZ) {
+    const m = t.match(re);
+    if (m) {
+      tz = zone;
+      place = m[0];
+      break;
+    }
+  }
+  const now = new Date();
+  const zoneOpt = tz ? { timeZone: tz } : {};
+  if (wantsTime && !wantsDate) {
+    const timeStr = new Intl.DateTimeFormat('en-GB', {
+      hour: 'numeric', minute: '2-digit', ...zoneOpt, timeZoneName: 'short',
+    }).format(now);
+    return tz
+      ? `In ${place.charAt(0).toUpperCase()}${place.slice(1)} it’s **${timeStr}** right now${hey}.`
+      : `It’s **${timeStr}** where you are${hey} — straight from your device’s clock. (Try “what time is it in London” for another city.)`;
+  }
+  const dateStr = new Intl.DateTimeFormat('en-GB', {
+    weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', ...zoneOpt,
+  }).format(now);
+  return wantsTime
+    ? `It’s **${dateStr}**${tz ? ` in ${place.charAt(0).toUpperCase()}${place.slice(1)}` : ''}${hey}.`
+    : `Today is **${dateStr}**${tz ? ` in ${place.charAt(0).toUpperCase()}${place.slice(1)}` : ''}${hey}.`;
+}
+
+/* ---------- shared knowledge pipeline: course → live web → offline packs ---------- */
+
+const COURSE_ASK =
+  /\b(lesson|lessons|course|courses|syllabus|curriculum|module|assignment|try-?ons?|quiz|homework|the (class|lecture)|day\s*\d+|week\s*\d+|month\s*\d+|what did we (learn|cover|do)|what are we learning|what should i (learn|study) today|today'?s (lesson|class|topic))\b/i;
+
+interface KnowledgeOpts {
+  allowCourse: boolean;
+  courseSlug: string | 'all';
+  preferCourse: boolean;
+  pointer?: boolean;
+  deeper?: boolean;
+}
+
+async function knowledgeReply(
+  q: string,
+  mentor: MentorProfile,
+  seed: number,
+  name: string | null,
+  opts: KnowledgeOpts,
+): Promise<MentorReply | null> {
+  const t = q.toLowerCase();
+  const courseAsked = COURSE_ASK.test(q);
+  const hits = pickDocs(q, opts.courseSlug, 2);
+  const score = hits.length ? scoreDoc(tokens(q), hits[0]) : 0;
+
+  // course grounding — subject tutors' own material, or when they explicitly ask about the course
+  if (opts.allowCourse && hits.length && (courseAsked || opts.preferCourse)) {
+    const threshold = courseAsked ? 3 : 6;
+    if (score >= threshold) {
+      return courseAnswer(q, mentor, seed, name, [], !!opts.pointer);
+    }
+  }
+
+  // live web lookup — accurate answers to almost anything
+  const wiki = await wikiLookup(q, opts.deeper ? 6 : 3);
+  if (wiki) return wikiAnswer(wiki, mentor, seed, name, !!opts.deeper);
+
+  // offline fallbacks
+  const term = termReply(q, mentor, seed);
+  if (term) return { text: term, sources: [] };
+  for (const pack of TOPICS) {
+    if (pack.re.test(t)) return { text: pack.reply(q, seed, name), sources: [] };
+  }
+  if (opts.allowCourse && hits.length && score >= 4 && q.length < 220) {
+    return courseAnswer(q, mentor, seed, name, [], !!opts.pointer);
+  }
+  return null;
+}
+
 /* ---------- main entry ---------- */
 
 /**
  * Conversational reply — the single swap-point for a real LLM. Keep this
  * signature; replace the body with a provider call using
- * `getMentor(mentorId).systemPrompt`, `collectContext(...)`, and `history`.
+ * `getMentor(mentorId).systemPrompt`, `collectContext(...)`, and `history`
+ * (it's async precisely so an API call can slot straight in).
  */
-export function askMentor(
+export async function askMentor(
   question: string,
   mentorId: string,
   courseSlug: string | 'all' = 'all',
   history: HistoryEntry[] = [],
-): MentorReply {
+): Promise<MentorReply> {
   const mentor = getMentor(mentorId);
   const q = question.trim();
   const seed = history.length * 7 + q.length;
   const name = extractName([...history, { from: 'user', text: q }]);
-  const short = q.length < 200;
+  const courseAsked = COURSE_ASK.test(q);
+  const isTutor = mentor.subject !== 'all';
 
   /* safety first — always */
   const safe = safetyReply(q);
@@ -780,6 +1072,12 @@ export function askMentor(
   /* quick maths */
   const math = mathReply(q, name);
   if (math) return { text: math, sources: [] };
+
+  /* live checks — weather and clock */
+  const wx = await liveWeather(q, seed, name);
+  if (wx) return wx;
+  const clock = liveTimeDate(q, name);
+  if (clock) return { text: clock, sources: [] };
 
   /* follow-ups continue the running topic (strict: the message IS the phrase) */
   if (isFollowUp(q)) {
@@ -818,6 +1116,20 @@ export function askMentor(
       .find((h) => h.from === 'user' && !isFollowUp(h.text) && h.text.trim().length >= 12);
     if (lastUser) {
       const t = lastUser.text.toLowerCase();
+      const personalish = /^\s*(i\b|i'?m\b|my\b|me\b|we\b|our\b|us\b)/i.test(lastUser.text);
+      if (personalish) {
+        for (const pack of TOPICS) {
+          if (pack.re.test(t)) return { text: pack.reply(lastUser.text, seed, name), sources: [] };
+        }
+      }
+      const kn = await knowledgeReply(lastUser.text, mentor, seed, name, {
+        allowCourse: isTutor,
+        courseSlug,
+        preferCourse: isTutor,
+        pointer: false,
+        deeper: true,
+      });
+      if (kn) return kn;
       for (const pack of TOPICS) {
         if (pack.re.test(t)) return { text: pack.reply(lastUser.text, seed, name), sources: [] };
       }
@@ -834,9 +1146,11 @@ export function askMentor(
   const op = opinionReply(q, mentor, seed, name);
   if (op) return { text: op, sources: [] };
 
-  /* quick definitions */
-  const term = termReply(q, mentor, seed);
-  if (term) return { text: term, sources: [] };
+  /* they asked about the course itself — course material answers that */
+  if (courseAsked) {
+    const ans = courseAnswer(q, mentor, seed, name, history, true);
+    if (ans) return ans;
+  }
 
   const isPersonal = /^\s*(i\b|i'?m\b|my\b|me\b|we\b|our\b|us\b)/i.test(q);
 
@@ -847,31 +1161,25 @@ export function askMentor(
         return { text: pack.reply(q, seed, name), sources: [] };
       }
     }
-    const ans = courseAnswer(q, mentor, seed, name, history);
-    if (ans) return ans;
+    const kn = await knowledgeReply(q, mentor, seed, name, {
+      allowCourse: isTutor,
+      courseSlug,
+      preferCourse: isTutor,
+      pointer: false,
+    });
+    if (kn) return kn;
     return { text: openThinkingReply(q, mentor, seed, name), sources: [] };
   }
 
-  /* knowledge questions: syllabus topics win when clearly matched */
-  const hits = pickDocs(q, courseSlug, 2);
-  const strongCourseMatch = hits.length && scoreDoc(tokens(q), hits[0]) >= 6;
-  if (strongCourseMatch) {
-    const ans = courseAnswer(q, mentor, seed, name, history);
-    if (ans) return ans;
-  }
-
-  /* broad topic packs — general knowledge & life */
-  for (const pack of TOPICS) {
-    if (pack.re.test(q.toLowerCase())) {
-      return { text: pack.reply(q, seed, name), sources: [] };
-    }
-  }
-
-  /* weaker course match still beats nothing */
-  if (hits.length && short) {
-    const ans = courseAnswer(q, mentor, seed, name, history);
-    if (ans) return ans;
-  }
+  /* knowledge questions: subject tutors ground in their course first; the
+   * general companion goes straight to verified live knowledge */
+  const kn = await knowledgeReply(q, mentor, seed, name, {
+    allowCourse: isTutor || courseAsked,
+    courseSlug,
+    preferCourse: isTutor,
+    pointer: false,
+  });
+  if (kn) return kn;
 
   /* nothing matched — think with them like a human would */
   return { text: openThinkingReply(q, mentor, seed, name), sources: [] };

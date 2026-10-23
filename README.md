@@ -25,19 +25,21 @@ profile → redirected to `/auth`.
 - **Academy Home** — greeting, global streak chip, Today card (next lesson + course
   photo + progress ring), course catalog with photo cards and
   Enrolled / Available / Coming Soon states.
-- **AI Mentor chat** — a floating chat box built for natural tutoring, not search:
-  open follow-ups ("tell me more", "explain simpler"), clarifications, ideas and
-  scripts. Mentors answer **beyond the syllabus too** — general knowledge, life
-  questions, maths, opinions, small talk — in a warm, human voice (they remember
-  your name within a chat, admit when they don't know, and keep course links as a
-  secondary flourish). Pick a **subject** (General / Psychology / Communication) —
-  when the subject has dedicated mentors, a mentor list appears inside the chat
-  (Dr. Ayo & Coach Ada for Psychology, Kemi & Tunde for Communication) and each
-  mentor has their own voice and system prompt; subjects without mentors skip
-  straight to the standard assistant. Conversations are preserved per mentor. The
-  engine is LLM-ready — `lib/mentor.ts` exposes `askMentor(...)`, the system
-  prompts, message history, and grounding context for a later API swap-in. The
-  panel is sized to sit cleanly below the navbar at every viewport.
+- **AI companion chat** — a floating chat with **Nova ✨**, a little companion
+  who answers *any* question accurately: live Wikipedia grounding for facts,
+  live weather and clock lookups, maths, life advice, opinions, jokes, small
+  talk — and no forced course references. Nova remembers your name within a
+  chat and admits when something is uncertain. Pick a **subject** (General /
+  Psychology / Communication) — subjects with dedicated mentors show a mentor
+  list inside the chat (Dr. Ayo & Coach Ada for Psychology, Kemi & Tunde for
+  Communication), each with their own voice and system prompt; subjects without
+  mentors skip straight to Nova. Subject tutors ground strong syllabus matches
+  in their course material (links appear as source chips); conversations are
+  preserved per mentor. Live lookups run in the browser against keyless public
+  APIs (Wikipedia, Open-Meteo) and degrade gracefully to an offline engine.
+  `lib/mentor.ts` exposes `askMentor(...)` — now async — as the single swap-point
+  for a real LLM provider. The panel sits cleanly below the navbar at every
+  viewport.
 - **Courses** — Psychology (Month 1 fully seeded, 28 days) and Communication
   (Week 1 fully seeded; later weeks follow the same template). Every learn day pairs
   a story-driven lesson with a hands-on **try-on** — a concrete action with exact

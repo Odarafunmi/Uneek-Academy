@@ -50,6 +50,8 @@ export function MentorChat() {
   const [sessions, setSessions] = useState<Record<string, ChatMsg[]>>({});
   const [input, setInput] = useState('');
   const [typing, setTyping] = useState(false);
+  const [typingHint, setTypingHint] = useState<'typing' | 'looking'>('typing');
+  const hintTimer = useRef<number | null>(null);
   const listRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const greeted = useRef<Set<string>>(new Set());
@@ -99,7 +101,7 @@ export function MentorChat() {
     listRef.current?.scrollTo({ top: listRef.current.scrollHeight, behavior: 'smooth' });
   }, [msgs, typing, open, stage]);
 
-  function send(text: string) {
+  async function send(text: string) {
     const q = text.trim();
     if (!q || typing) return;
     const key = sessionKey;
@@ -107,9 +109,22 @@ export function MentorChat() {
     setSessions((s) => ({ ...s, [key]: [...(s[key] ?? []), { from: 'user', text: q }] }));
     setInput('');
     setTyping(true);
-    const reply = askMentor(q, mentorId, subject, history);
-    // a beat of "thinking" proportional to the reply — feels like typing, not stamping
-    const delay = Math.min(1600, 500 + reply.text.length * 3);
+    setTypingHint('typing');
+    // if it takes a beat (live lookups), show that we're fetching — feels honest
+    if (hintTimer.current) window.clearTimeout(hintTimer.current);
+    hintTimer.current = window.setTimeout(() => setTypingHint('looking'), 1300);
+    let reply: { text: string; sources?: MentorSource[] };
+    try {
+      reply = await askMentor(q, mentorId, subject, history);
+    } catch {
+      reply = {
+        text: 'Oops — something glitched on my end just then. Say that again for me?',
+        sources: [],
+      };
+    }
+    if (hintTimer.current) window.clearTimeout(hintTimer.current);
+    // a short beat of "typing" so answers arrive like a person, not a stamp
+    const delay = Math.min(1200, 350 + reply.text.length * 2);
     window.setTimeout(() => {
       setTyping(false);
       setSessions((s) => ({
@@ -130,7 +145,7 @@ export function MentorChat() {
         className="mentor-launcher fixed z-[300] flex h-14 w-14 items-center justify-center rounded-full shadow-md tr-micro hover:scale-105"
         style={{ background: 'var(--primary)', color: '#fff' }}
         aria-label={open ? 'Close mentor chat' : 'Open mentor chat'}
-        title="AI Mentor"
+        title="Chat with Nova"
       >
         {open ? <X size={22} /> : <MessageCircle size={22} />}
       </button>
@@ -144,7 +159,7 @@ export function MentorChat() {
             border: '1px solid var(--line)',
           }}
           role="dialog"
-          aria-label="AI Mentor chat"
+          aria-label="Companion chat"
         >
           {/* header */}
           <div className="flex items-center gap-3 border-b border-line px-4 py-3">
@@ -214,7 +229,7 @@ export function MentorChat() {
                 className="t-label w-full rounded-card border border-dashed border-line px-3.5 py-3 tr-micro hover:border-primary"
                 style={{ color: 'var(--muted)' }}
               >
-                ✨ Just chat with the general assistant instead
+                ✨ Just chat with Nova instead
               </button>
             </div>
           ) : (
@@ -248,17 +263,30 @@ export function MentorChat() {
                       <Rich text={m.text} />
                       {m.sources && m.sources.length > 0 && (
                         <div className="mt-2 space-y-1 border-t pt-2" style={{ borderColor: 'var(--line)' }}>
-                          {m.sources.map((s) => (
-                            <Link
-                              key={s.href + s.label}
-                              href={s.href}
-                              onClick={() => setOpen(false)}
-                              className="block t-label underline tr-micro"
-                              style={{ color: 'var(--primary)' }}
-                            >
-                              → {s.label}
-                            </Link>
-                          ))}
+                          {m.sources.map((s) =>
+                            /^https?:\/\//.test(s.href) ? (
+                              <a
+                                key={s.href + s.label}
+                                href={s.href}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="block t-label underline tr-micro"
+                                style={{ color: 'var(--primary)' }}
+                              >
+                                ↗ {s.label}
+                              </a>
+                            ) : (
+                              <Link
+                                key={s.href + s.label}
+                                href={s.href}
+                                onClick={() => setOpen(false)}
+                                className="block t-label underline tr-micro"
+                                style={{ color: 'var(--primary)' }}
+                              >
+                                → {s.label}
+                              </Link>
+                            ),
+                          )}
                         </div>
                       )}
                     </div>
@@ -266,7 +294,7 @@ export function MentorChat() {
                 ))}
                 {typing && (
                   <p className="t-label" style={{ color: 'var(--muted)' }}>
-                    {mentor.name} is typing…
+                    {typingHint === 'looking' ? `${mentor.name} is looking that up…` : `${mentor.name} is typing…`}
                   </p>
                 )}
                 {msgs.filter((m) => m.from === 'user').length === 0 && !typing && (
@@ -312,7 +340,7 @@ export function MentorChat() {
                 </button>
               </form>
               <p className="flex items-center gap-1 px-4 pb-2 t-label" style={{ color: 'var(--soft)' }}>
-                <Sparkles size={11} /> A learning companion — not a therapist
+                <Sparkles size={11} /> A little companion — not a therapist
               </p>
             </>
           )}
