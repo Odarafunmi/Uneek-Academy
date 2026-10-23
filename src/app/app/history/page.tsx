@@ -98,8 +98,13 @@ export default function HistoryPage() {
                     <td className="px-5 py-4">
                       <Link
                         href={`/app/courses/${r.slug}/day/${r.dayIndex}`}
-                        className="t-label"
-                        style={{ color: accentForMonth(r.month).hex, fontWeight: 600 }}
+                        className="t-label rounded-full px-2.5 py-1"
+                        style={{
+                          background: accentForMonth(r.month).hex,
+                          color: '#fff',
+                          fontWeight: 600,
+                          textShadow: '0 1px 2px rgba(15,18,38,.3)',
+                        }}
                       >
                         Day {r.dayIndex}
                       </Link>

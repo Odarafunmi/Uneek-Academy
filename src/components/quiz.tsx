@@ -65,7 +65,7 @@ export function Quiz({
 
   return (
     <div>
-      {/* progress dots */}
+      {/* progress dots — done=green, now=amber, upcoming=neutral */}
       <div className="mb-6 flex items-center gap-2">
         {questions.map((_, i) => (
           <span
@@ -74,8 +74,7 @@ export function Quiz({
             style={{
               width: i === idx ? 24 : 8,
               background:
-                i < idx ? 'var(--primary)' : i === idx ? 'var(--primary)' : 'var(--line)',
-              opacity: i === idx ? 1 : i < idx ? 0.5 : 1,
+                i < idx ? '#12B886' : i === idx ? '#FFB020' : 'var(--line)',
             }}
           />
         ))}

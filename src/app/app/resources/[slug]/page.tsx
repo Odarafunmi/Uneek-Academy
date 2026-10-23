@@ -2,11 +2,17 @@
 
 import Link from 'next/link';
 import { notFound, useParams } from 'next/navigation';
-import { libraryArticles, KIND_LABELS } from '@/content/resources';
+import { libraryArticles, KIND_LABELS, KIND_COLORS } from '@/content/resources';
 import { useApp } from '@/lib/store';
 import { SectionLabel, PillTag } from '@/components/ui';
 import { Arrow } from '@/components/ui';
-import { FileText } from 'lucide-react';
+import { BookOpen, FileText, Newspaper } from 'lucide-react';
+
+const KIND_ICON = {
+  blog: <Newspaper size={14} />,
+  paper: <FileText size={14} />,
+  guide: <BookOpen size={14} />,
+};
 
 /** tiny renderer for **bold** inside article paragraphs */
 function Bold({ text }: { text: string }) {
@@ -47,11 +53,18 @@ export default function ArticlePage() {
         <Arrow size={14} /> <span>Back to library</span>
       </Link>
 
-      <div className="mt-6 flex items-center gap-2">
-        <span style={{ color: 'var(--primary)' }}>
-          <FileText size={15} />
+      <div className="mt-6 flex flex-wrap items-center gap-2">
+        <span
+          className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 t-label"
+          style={{
+            background: KIND_COLORS[article.kind].text,
+            color: '#fff',
+            fontWeight: 600,
+          }}
+        >
+          {KIND_ICON[article.kind]}
+          {KIND_LABELS[article.kind]}
         </span>
-        <SectionLabel>{KIND_LABELS[article.kind]}</SectionLabel>
         <span className="t-label" style={{ color: 'var(--soft)' }}>
           · {article.minutes} min read
         </span>
@@ -75,8 +88,8 @@ export default function ArticlePage() {
             href={article.link}
             target="_blank"
             rel="noopener noreferrer"
-            className="t-label tr-micro"
-            style={{ color: 'var(--primary)', fontWeight: 600 }}
+            className="t-label link-slide inline-flex items-center gap-1"
+            style={{ color: KIND_COLORS[article.kind].text, fontWeight: 600 }}
           >
             {article.kind === 'blog' ? 'Further reading ↗' : 'View source ↗'}
           </a>
@@ -85,7 +98,11 @@ export default function ArticlePage() {
 
       <p
         className="t-body-l mt-8 rounded-card p-5"
-        style={{ background: 'var(--mist)', color: 'var(--text)' }}
+        style={{
+          background: 'var(--mist)',
+          color: 'var(--text)',
+          borderLeft: `4px solid ${KIND_COLORS[article.kind].text}`,
+        }}
       >
         {article.excerpt}
       </p>
@@ -93,7 +110,7 @@ export default function ArticlePage() {
       <div className="mt-8 space-y-5">
         {article.body.map((p, i) =>
           p.startsWith('## ') ? (
-            <h2 key={i} className="t-h3 pt-3">
+            <h2 key={i} className="t-h3 pt-3" style={{ color: KIND_COLORS[article.kind].text }}>
               {p.slice(3)}
             </h2>
           ) : (

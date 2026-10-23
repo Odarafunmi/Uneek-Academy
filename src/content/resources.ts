@@ -25,6 +25,13 @@ export const KIND_LABELS: Record<Article['kind'], string> = {
   guide: 'Study guide',
 };
 
+/** Distinct visual identity per library category (tokens defined in globals.css). */
+export const KIND_COLORS: Record<Article['kind'], { text: string; tint: string; line: string }> = {
+  blog: { text: 'var(--cat-blog)', tint: 'var(--cat-blog-tint)', line: 'var(--cat-blog-line)' },
+  paper: { text: 'var(--cat-paper)', tint: 'var(--cat-paper-tint)', line: 'var(--cat-paper-line)' },
+  guide: { text: 'var(--cat-guide)', tint: 'var(--cat-guide-tint)', line: 'var(--cat-guide-line)' },
+};
+
 export const KIND_COUNTS: Record<Article['kind'], number> = {
   blog: libraryBlogs.length,
   paper: libraryPapers.length,

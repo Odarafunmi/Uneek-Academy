@@ -303,7 +303,7 @@ function StepContent({
   if (step.kind === 'reflection') {
     return (
       <div>
-        <PillTag tone="tint">Reflection</PillTag>
+        <PillTag tone="sky">Reflection</PillTag>
         <h3 className="t-h3 mt-4">{step.prompt}</h3>
         <textarea
           rows={4}
@@ -318,7 +318,7 @@ function StepContent({
   if (step.kind === 'exercise') {
     return (
       <div>
-        <PillTag tone="accent">Real-world exercise</PillTag>
+        <PillTag tone="orange">Real-world exercise</PillTag>
         <h3 className="t-h3 mt-4">{step.prompt}</h3>
         <p className="t-small mt-4" style={{ color: 'var(--muted)' }}>
           Jot the result below when you have tried it — then continue to the quiz.
@@ -335,7 +335,7 @@ function StepContent({
   }
   return (
     <div>
-      <PillTag tone="tint">
+      <PillTag tone="mint">
         {isReview ? 'Cumulative test' : 'Quick check'}
       </PillTag>
       <h3 className="t-h3 mt-4">Lock it in</h3>
@@ -369,7 +369,7 @@ function CardView({ card }: { card: ContentCard }) {
     case 'example':
       return (
         <div>
-          <div className="t-label" style={{ color: 'var(--primary)', fontWeight: 600 }}>
+          <div className="t-label" style={{ color: 'var(--sky-text)', fontWeight: 600 }}>
             {card.title}
           </div>
           <p className="t-body-l mt-2">{card.body}</p>
@@ -378,7 +378,7 @@ function CardView({ card }: { card: ContentCard }) {
     case 'practice':
       return (
         <div className="rounded-card border border-line p-6">
-          <div className="t-label" style={{ color: 'var(--muted)', fontWeight: 600 }}>
+          <div className="t-label" style={{ color: 'var(--success-text)', fontWeight: 600 }}>
             {card.title}
           </div>
           <p className="t-body mt-2">{card.body}</p>
@@ -388,9 +388,9 @@ function CardView({ card }: { card: ContentCard }) {
       return (
         <div className="overflow-hidden rounded-card" style={{ background: 'var(--mist)' }}>
           <div className="flex">
-            <div className="w-1 shrink-0" style={{ background: 'var(--primary)' }} aria-hidden="true" />
+            <div className="w-1 shrink-0" style={{ background: 'var(--danger)' }} aria-hidden="true" />
             <div className="p-6">
-              <div className="t-label" style={{ color: 'var(--primary)', fontWeight: 600 }}>
+              <div className="t-label" style={{ color: 'var(--danger-text)', fontWeight: 600 }}>
                 Story{card.title ? ` · ${card.title}` : ''}
               </div>
               <p className="t-body-l mt-3">{card.body}</p>
@@ -460,7 +460,7 @@ function VideoCard({ video }: { video?: LessonVideo }) {
                 <path d="M8 5.5v13l11-6.5z" />
               </svg>
             </span>
-            <span className="t-label rounded-full px-3.5 py-1.5" style={{ background: 'rgba(15,18,38,.65)', color: '#fff' }}>
+            <span className="t-label rounded-full px-3.5 py-1.5" style={{ background: '#0F1226', color: '#fff' }}>
               Video coming soon
             </span>
           </div>
@@ -517,7 +517,7 @@ function VideoCard({ video }: { video?: LessonVideo }) {
                   <path d="M8 5.5v13l11-6.5z" />
                 </svg>
               </span>
-              <span className="t-label rounded-full px-3.5 py-1.5" style={{ background: 'rgba(15,18,38,.65)', color: '#fff' }}>
+              <span className="t-label rounded-full px-3.5 py-1.5" style={{ background: '#0F1226', color: '#fff' }}>
                 Play · {video.title}
               </span>
             </div>

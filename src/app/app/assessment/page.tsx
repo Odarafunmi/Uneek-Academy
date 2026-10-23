@@ -90,25 +90,32 @@ export default function AssessmentPage() {
             1 · Course
           </p>
           <div className="mt-2 flex flex-wrap gap-2">
-            {courseOptions.map((c) => (
-              <button
-                key={c.slug}
-                onClick={() => {
-                  setSlug(c.slug);
-                  setPct(completionPct(progress, enrolled, c.slug) || 25);
-                }}
-                className="rounded-full border px-4 py-2 t-label tr-micro"
-                style={{
-                  borderColor: slug === c.slug ? 'var(--primary)' : 'var(--line)',
-                  background: slug === c.slug ? 'var(--primary-tint)' : 'var(--bg)',
-                  color: slug === c.slug ? 'var(--primary)' : 'var(--text)',
-                  fontWeight: slug === c.slug ? 600 : 500,
-                }}
-                aria-pressed={slug === c.slug}
-              >
-                {c.title.split(':')[0]}
-              </button>
-            ))}
+            {courseOptions.map((c) => {
+              const active = slug === c.slug;
+              const cc =
+                c.slug === 'communication'
+                  ? { border: 'var(--sky)', bg: 'var(--sky)', fg: '#fff' }
+                  : { border: 'var(--primary)', bg: 'var(--primary)', fg: '#fff' };
+              return (
+                <button
+                  key={c.slug}
+                  onClick={() => {
+                    setSlug(c.slug);
+                    setPct(completionPct(progress, enrolled, c.slug) || 25);
+                  }}
+                  className="tap rounded-full border px-4 py-2 t-label"
+                  style={{
+                    borderColor: active ? cc.border : 'var(--line)',
+                    background: active ? cc.bg : 'var(--bg)',
+                    color: active ? cc.fg : 'var(--text)',
+                    fontWeight: active ? 600 : 500,
+                  }}
+                  aria-pressed={active}
+                >
+                  {c.title.split(':')[0]}
+                </button>
+              );
+            })}
             {enrolledSlugs.length === 0 && (
               <span className="t-label self-center" style={{ color: 'var(--soft)' }}>
                 (no enrollments yet — testing from the full syllabus)

@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import Link from 'next/link';
-import { KIND_LABELS, KIND_COUNTS, libraryArticles } from '@/content/resources';
+import { KIND_LABELS, KIND_COUNTS, KIND_COLORS, libraryArticles } from '@/content/resources';
 import { useApp } from '@/lib/store';
 import { canDeleteArticle, canEditArticle, canManageContent } from '@/lib/rbac';
 import { SectionLabel, PillTag } from '@/components/ui';
@@ -23,11 +23,21 @@ const KIND_ICON: Record<ArticleKind, React.ReactNode> = {
 };
 
 function ArticleCard({ a, children }: { a: Article; children?: React.ReactNode }) {
+  const c = KIND_COLORS[a.kind];
   return (
-    <article className="flex flex-col rounded-card border border-line p-6">
+    <article
+      className="cat-hover flex flex-col rounded-card border border-line p-6"
+      style={{ ['--card-accent' as string]: c.text }}
+    >
       <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-        <span style={{ color: 'var(--primary)' }}>{KIND_ICON[a.kind]}</span>
-        <span className="t-label" style={{ color: 'var(--primary)' }}>
+        <span
+          className="flex h-7 w-7 items-center justify-center rounded-full tr-micro"
+          style={{ background: c.text, color: c.tint }}
+          aria-hidden="true"
+        >
+          {KIND_ICON[a.kind]}
+        </span>
+        <span className="t-label" style={{ color: c.text, fontWeight: 600 }}>
           {KIND_LABELS[a.kind]}
         </span>
         <span className="t-label" style={{ color: 'var(--soft)' }}>
@@ -45,10 +55,10 @@ function ArticleCard({ a, children }: { a: Article; children?: React.ReactNode }
       <div className="mt-4 flex flex-wrap items-center justify-between gap-2">
         <Link
           href={`/app/resources/${a.slug}`}
-          className="t-label tr-micro"
-          style={{ color: 'var(--primary)', fontWeight: 600 }}
+          className="t-label link-slide inline-flex items-center gap-1"
+          style={{ color: c.text, fontWeight: 600 }}
         >
-          Read →
+          Read <span aria-hidden="true">→</span>
         </Link>
         <div className="flex items-center gap-2">
           {a.link && (
@@ -202,25 +212,29 @@ export default function ResourcesPage() {
 
       {/* filters */}
       <div className="mt-8 flex flex-wrap items-center gap-2">
-        {FILTERS.map((f) => (
-          <button
-            key={f.id}
-            onClick={() => setFilter(f.id)}
-            className="rounded-full border px-4 py-2 t-label tr-micro"
-            style={{
-              borderColor: filter === f.id ? 'var(--primary)' : 'var(--line)',
-              background: filter === f.id ? 'var(--primary-tint)' : 'var(--bg)',
-              color: filter === f.id ? 'var(--primary)' : 'var(--text)',
-              fontWeight: filter === f.id ? 600 : 500,
-            }}
-            aria-pressed={filter === f.id}
-          >
-            {f.label}
-            {f.id !== 'all' && (
-              <span style={{ opacity: 0.65 }}> · {KIND_COUNTS[f.id] ?? 0}</span>
-            )}
-          </button>
-        ))}
+        {FILTERS.map((f) => {
+          const active = filter === f.id;
+          const c = f.id === 'all' ? null : KIND_COLORS[f.id];
+          return (
+            <button
+              key={f.id}
+              onClick={() => setFilter(f.id)}
+              className="tap rounded-full border px-4 py-2 t-label"
+              style={{
+                borderColor: active ? (c ? c.text : 'var(--primary)') : c ? c.text : 'var(--line)',
+                background: active ? (c ? c.text : 'var(--primary)') : 'var(--bg)',
+                color: active ? '#fff' : c ? c.text : 'var(--text)',
+                fontWeight: active ? 600 : 500,
+              }}
+              aria-pressed={active}
+            >
+              {f.label}
+              {f.id !== 'all' && (
+                <span> · {KIND_COUNTS[f.id] ?? 0}</span>
+              )}
+            </button>
+          );
+        })}
         <input
           value={q}
           onChange={(e) => setQ(e.target.value)}
@@ -231,8 +245,8 @@ export default function ResourcesPage() {
         />
       </div>
 
-      {/* grid */}
-      <div className="mt-6 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+      {/* grid — remounts (and re-animates) when the category changes */}
+      <div key={filter} className="animate-fade-up mt-6 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
         {visible.map((a) => (
           <ArticleCard key={a.id} a={a}>
             {a.custom && (
@@ -241,7 +255,7 @@ export default function ResourcesPage() {
                 {account &&
                   canEditArticle(role, { authorEmail: (a as { authorEmail?: string }).authorEmail }, account.email) && (
                     <button
-                      className="t-label tr-micro"
+                      className="t-label tap"
                       style={{ color: 'var(--muted)' }}
                       onClick={() => {
                         // inline quick-fix: republish a corrected copy via the editor
