@@ -135,6 +135,61 @@ export const moreCourses: CourseConfig[] = [
     coverImage: '/images/course-communication.jpg',
   },
   {
+    slug: 'networking',
+    title: 'Networking: The Psychology of Connection',
+    tagline:
+      'Walk into any room, start real conversations, and build a web of relationships that compounds — without pretending to be someone you are not.',
+    description:
+      'An eight-week daily program on the psychology of networking: how connection actually works, how to start and deepen relationships, how to manage them over time, and how to work — and run — any room. Built for quiet people and busy people: tiny brave actions every day, exact words to borrow, and a capstone network map with a 30-day plan. By the end you can start conversations with strangers, follow up within 72 hours, maintain your circles without overwhelm, ask for and give help well, and navigate or host any room with calm — a predictable, demonstrable mastery you can see on paper.',
+    level: 'Beginner to advanced',
+    totalWeeks: 8,
+    totalDays: 56,
+    levelTitles: [
+      { title: 'Newcomer', xp: 0 },
+      { title: 'Greeter', xp: 350 },
+      { title: 'Connector', xp: 900 },
+      { title: 'Convener', xp: 1800 },
+      { title: 'Networker', xp: 3200 },
+    ],
+    months: [
+      {
+        title: 'Why Connection Works',
+        weeks: 2,
+        topics:
+          'The science of belonging and why networking feels fake, warmth and competence, vulnerability as the doorway, weak ties and small talk, the spotlight effect, the introvert advantage, remembering names.',
+        accent: '#F25C54',
+        accentText: 'white',
+      },
+      {
+        title: 'How to Network',
+        weeks: 2,
+        topics:
+          'The three-question ladder, listening people can feel, speaking so others lean in, graceful exits, the 72-hour follow-up, informational interviews, asking without flinching, give-first reciprocity, digital networking without cringe.',
+        accent: '#0EA5E9',
+        accentText: 'white',
+      },
+      {
+        title: 'Relationship & Room Management',
+        weeks: 2,
+        topics:
+          "Dunbar's layers and a maintenance budget, presence in a phone world, bids and turning toward, maintenance calendars, repair and renegotiation, reading a room in 60 seconds, working a room as an introvert, hosting and brokering introductions.",
+        accent: '#14B8A6',
+        accentText: 'white',
+      },
+      {
+        title: 'Mastery and Your Network',
+        weeks: 2,
+        topics:
+          'Status and the room’s hidden ladder, speaking up for yourself, handling takers and difficult rooms, cross-cultural rooms, the network audit, your personal board of advisors, generosity systems, the capstone: network map and 30-day plan.',
+        accent: '#FFB020',
+        accentText: 'white',
+      },
+    ],
+    status: 'live',
+    coverIllustration: 'network',
+    coverImage: '/images/course-networking.jpg',
+  },
+  {
     slug: 'finance',
     title: 'Personal Finance: Money With Intention',
     tagline: 'Build calm, durable money habits one small lesson a day.',

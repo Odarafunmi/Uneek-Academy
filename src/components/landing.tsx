@@ -403,7 +403,7 @@ export function HowItWorks() {
           />
           <ul className="mt-8 space-y-5">
             {[
-              ['Browse the library', 'Choose a course that fits your goal — psychology is live now, with more on the way.'],
+              ['Browse the library', 'Choose a course that fits your goal — psychology and networking are live now, with more on the way.'],
               ['Create your profile', 'Sign up once in this browser — your streak, XP, and progress stay with you.'],
               ['Learn one day at a time', 'Access lessons anywhere. Flexible schedules and small steps keep you consistent.'],
               ['Apply what you learn', 'Exercises, weekly reviews, and shareable hook cards turn insight into habit.'],

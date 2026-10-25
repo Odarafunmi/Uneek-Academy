@@ -29,6 +29,7 @@ export function Illustration({ name, className = '', size = 120 }: IlluProps & {
     schema: <Folders />,
     story: <BookPen />,
     speech: <Speech />,
+    network: <Network />,
     coins: <Coins />,
     hook: <Envelope />,
     rest: <MoonRest />,
@@ -187,6 +188,26 @@ function Speech() {
       <rect x="10" y="10" width="100" height="100" rx="16" fill={P.mintTint} />
       <path d="M28 38h64a6 6 0 0 1 6 6v24a6 6 0 0 1-6 6H52l-14 12v-12h-10a6 6 0 0 1-6-6V44a6 6 0 0 1 6-6z" fill="#fff" stroke={P.ink} strokeWidth="3" />
       <path d="M40 52h40M40 62h26" stroke={P.ink} strokeWidth="3" strokeLinecap="round" />
+    </g>
+  );
+}
+
+function Network() {
+  return (
+    <g>
+      <rect x="10" y="10" width="100" height="100" rx="16" fill={P.indigoTint} />
+      <path
+        d="M36 44L60 28M36 44L34 76M60 28L86 42M60 28L62 60M34 76L62 60M86 42L62 60M62 60L84 84"
+        stroke={P.ink}
+        strokeWidth="2.5"
+        strokeLinecap="round"
+      />
+      <circle cx="36" cy="44" r="9" fill={P.indigo} stroke={P.ink} strokeWidth="2.5" />
+      <circle cx="86" cy="42" r="9" fill={P.indigo} stroke={P.ink} strokeWidth="2.5" />
+      <circle cx="34" cy="76" r="9" fill={P.indigo} stroke={P.ink} strokeWidth="2.5" />
+      <circle cx="84" cy="84" r="9" fill={P.indigo} stroke={P.ink} strokeWidth="2.5" />
+      <circle cx="60" cy="28" r="8" fill={P.amber} stroke={P.ink} strokeWidth="2.5" />
+      <circle cx="62" cy="60" r="11" fill={P.amber} stroke={P.ink} strokeWidth="2.5" />
     </g>
   );
 }
